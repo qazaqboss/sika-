@@ -208,6 +208,12 @@ footer a{word-break:break-all}
 .v3d.big{position:relative;height:clamp(300px,52vh,460px);border:1.5px solid var(--ink);background:radial-gradient(ellipse at 50% 85%,color-mix(in srgb,var(--gc) 14%,var(--bg)),var(--bg) 70%);margin-bottom:6px}
 .v3d.big .lb{font-size:12px}
 .v3d.big .cap{font-size:13px;bottom:10px;left:10px;right:10px}
+.vstage{position:relative;border:1.5px solid var(--ink);background:var(--bg);overflow:hidden}
+.vstage video{display:block;width:100%;height:auto;aspect-ratio:814/458;background:#eceeea}
+.vstage .v3d.big{border:0;margin:0}
+.vbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.vbar .btn{padding:6px 12px;font-size:12px}
+.v3d-steps li{cursor:pointer}
 .gl2{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}
 .gl2:active{cursor:grabbing}
 .drag-hint{position:absolute;right:10px;top:10px;z-index:2;font:600 10.5px var(--f-mono);color:var(--ink-2);background:color-mix(in srgb,var(--paper) 85%,transparent);padding:3px 7px;border-radius:3px;pointer-events:none}
@@ -382,6 +388,7 @@ const P = [
  {id:"p3n",g:"primer",n:"Sika Primer-3N",o:"",u:"Праймер под полиуретановые герметики Sikaflex на бетоне, металле и дереве",pk:"can",w:1,p:[20800,20800],unit:"л",sp:{"Тип":"Эпокси-полиуретановый праймер","Фасовка":"1 л"},t:null,comp:[["Смола",35],["Растворитель",65]],layers:[["Основание",0],["Праймер",2],["Герметик",10]],steps:["Очистить","Нанести тонко кистью","Выдержать 30 мин – 8 ч"],src:"neostrim.kz"}
 ];
 
+const VINFO = {"s488":{"L":10,"steps":[[0,"Вскрыт дефект: слабый бетон удалён, арматура в ржавчине"],[1.6,"Очистка арматуры щёткой до металла"],[2.8,"Увлажнение основания до матово-влажного"],[3.9,"Нанесение SikaEmaco S 488 кельмой, 6–40 мм за проход"],[7.9,"Уход: плёнка или влажный уход 24 ч"]]},"t300":{"L":10,"steps":[[0,"Вырубка разрушенного бетона и асфальта вокруг люка, глубина 20–50 мм"],[1.5,"Рама люка выставляется в проектное положение"],[3,"Наливной SikaEmaco T 300 заливается вокруг рамы, 20–50 мм"],[7.2,"Через ≈ 1 ч по люку открывают движение"]]},"t1100":{"L":10,"steps":[[0,"Вскрыт дефект: слабый бетон удалён, арматура в ржавчине"],[1.6,"Очистка арматуры щёткой до металла"],[2.8,"Увлажнение основания до матово-влажного"],[3.9,"Нанесение SikaEmaco T 1100 TIX кельмой, 10–100 мм за проход"],[7.9,"Уход: плёнка или влажный уход 24 ч"]]},"n900":{"L":9.5,"steps":[[0,"Основание с порами и раковинами"],[1.3,"Обеспыливание и увлажнение"],[2.6,"SikaEmaco N 900: шпатлевание 0,5–5 мм широким шпателем"],[8.3,"Ровная плотная поверхность под окраску и защиту"]]},"mt612":{"L":10,"steps":[[0,"Вскрыт дефект: слабый бетон удалён, арматура в ржавчине"],[1.6,"Очистка арматуры щёткой до металла"],[2.8,"Увлажнение основания до матово-влажного"],[3.9,"Нанесение Sika MonoTop-612 кельмой, 6–40 мм за проход"],[7.9,"Уход: плёнка или влажный уход 24 ч"]]},"mt620":{"L":9.5,"steps":[[0,"Основание с порами и раковинами"],[1.3,"Обеспыливание и увлажнение"],[2.6,"Sika MonoTop-620: шпатлевание 1–5 мм широким шпателем"],[8.3,"Ровная плотная поверхность под окраску и защиту"]]},"s590":{"L":10.5,"steps":[[0,"Активная протечка: вода под давлением через трещину"],[1.2,"Трещина расшивается «ласточкиным хвостом» ≥ 20 мм"],[2.4,"Порция SikaTop-590 Seal вдавливается рукой в течь"],[3.6,"Удерживать 2–4 мин: схватывание, течь остановлена"],[7,"Сверху обмазочная гидроизоляция (501 / Seal-107)"]]},"s501":{"L":11,"steps":[[0,"Подвал: грунтовая вода давит на стену"],[0.8,"Очистка и обильное увлажнение бетона"],[1.6,"SikaTop-501 Seal: 1-й слой кистью ≈ 1 кг/м²"],[5.4,"2-й слой через 2–4 ч по свежему первому"],[8.6,"Кристаллы растут в капиллярах и закупоривают их"]]},"s107":{"L":11,"steps":[[0,"Подвал / бассейн: защита от напорной воды"],[0.8,"Увлажнение основания; смешивание A + B"],[1.6,"SikaTop Seal-107: 1-й слой кистью"],[5.4,"2-й слой крест-накрест через 3–6 ч"],[8.6,"Итог 2–3 мм жёстко-эластичной гидроизоляции"]]},"g928":{"L":10,"steps":[[0,"Опалубка; основание насыщено водой 6–24 ч"],[1.2,"Замес SikaGrout-928 целым мешком 5 мин"],[2,"Заливка с одной стороны через загрузочный короб"],[3.2,"Раствор течёт под плиту без вибрирования, зазор 25–150 мм"],[8.2,"Влажный уход по открытым кромкам"]]},"g212":{"L":10,"steps":[[0,"Опалубка; основание насыщено водой 6–24 ч"],[1.2,"Замес SikaGrout 212 целым мешком 5 мин"],[2,"Заливка с одной стороны через загрузочный короб"],[3.2,"Раствор течёт под плиту без вибрирования, зазор 10–80 мм"],[8.2,"Влажный уход по открытым кромкам"]]},"c-std":{"L":11,"steps":[[0,"Основание ровное, обеспылено и загрунтовано"],[1.2,"SikaCeram Standard: нанесение зубчатым шпателем"],[5.8,"Плитка укладывается с поворотом и прижатием"],[9.4,"Крестики держат ровный шов"]]},"c-uni":{"L":11,"steps":[[0,"Основание ровное, обеспылено и загрунтовано"],[1.2,"SikaCeram Universal: нанесение зубчатым шпателем"],[5.8,"Плитка укладывается с поворотом и прижатием"],[9.4,"Крестики держат ровный шов"]]},"c14":{"L":11,"steps":[[0,"Основание ровное, обеспылено и загрунтовано"],[1.2,"SikaCeram 14: нанесение зубчатым шпателем"],[5.8,"Плитка укладывается с поворотом и прижатием"],[9.4,"Мозаика на сетке: ровный шов по всей раскладке"]]},"c-pro":{"L":11,"steps":[[0,"Основание ровное, обеспылено и загрунтовано"],[1.2,"SikaCeram Pro / Pro KZ: нанесение зубчатым шпателем"],[5.8,"Плитка укладывается с поворотом и прижатием"],[9.4,"Крестики держат ровный шов"]]},"c15":{"L":11,"steps":[[0,"Основание ровное, обеспылено и загрунтовано"],[1.2,"SikaCeram 15: нанесение зубчатым шпателем"],[5.8,"Плитка укладывается с поворотом и прижатием"],[9.4,"Крестики держат ровный шов"]]},"flx24":{"L":11,"steps":[[0,"Основание ровное, обеспылено и загрунтовано"],[1.2,"SikaCeram FLX 24: нанесение зубчатым шпателем"],[5.8,"Плитка укладывается с поворотом и прижатием"],[9.4,"Крестики держат ровный шов"]]},"c5":{"L":9,"steps":[[0,"Первый ряд выставлен по уровню"],[1,"SikaCeram 5: тонкий слой 2–5 мм кареткой"],[3.6,"Блок укладывается на клей со смещением"],[5.2,"Подбивка резиновой киянкой"],[6.8,"Тонкий шов: меньше мостиков холода"]]},"t555":{"L":10,"steps":[[0,"Клей схватился, швы очищены"],[1,"SikaTile 555: втирание в швы резиновым шпателем по диагонали"],[5.8,"Смывка излишков влажной губкой"],[8.6,"Ровный водостойкий шов"]]},"c800":{"L":10,"steps":[[0,"Клей схватился, швы очищены"],[1,"SikaCeram-800 EP: втирание в швы резиновым шпателем по диагонали"],[5.8,"Смывка излишков влажной губкой"],[8.6,"Химстойкий шов без пор"]]},"f120":{"L":11,"steps":[[0,"Грунтовка основания, демпферная лента по периметру"],[1,"Розлив Sikafloor-120 Level Standard из ведра полосами"],[2.2,"Самовыравнивание 2–20 мм"],[6.4,"Прокатка игольчатым валиком: выходит воздух"],[9.2,"Хождение через ≈ 4–6 ч, далее финишное покрытие"]]},"sl505":{"L":11,"steps":[[0,"Грунтовка основания, демпферная лента по периметру"],[1,"Розлив SikaLevel SL 505 из ведра полосами"],[2.2,"Самовыравнивание 3–30 мм"],[6.4,"Прокатка игольчатым валиком: выходит воздух"],[9.2,"Хождение через ≈ 4–6 ч, далее финишное покрытие"]]},"qt100":{"L":11,"steps":[[0,"Свежий бетон: на поверхности след ноги 3–5 мм"],[0.9,"Рассыпать 2/3 нормы Sikafloor QuartzTop-100 равномерно"],[4,"Затирка дисками затирочной машины"],[7.6,"Остаток 1/3 и финишная затирка лопастями"],[9.8,"Износостойкий монолитный слой 3–8 кг/м²"]]},"chap":{"L":11,"steps":[[0,"Свежий бетон: на поверхности след ноги 3–5 мм"],[0.9,"Рассыпать 2/3 нормы SikaChapdur равномерно"],[4,"Затирка дисками затирочной машины"],[7.6,"Остаток 1/3 и финишная затирка лопастями"],[9.8,"Износостойкий монолитный слой 3–8 кг/м²"]]},"r335":{"L":10,"steps":[[0,"Кладка обеспылена и загрунтована"],[0.8,"Набрасывание SikaWall R 335 снизу вверх, 3–8 мм"],[4.8,"Выравнивание правилом"],[8,"Затирка: ровная прочная поверхность"]]},"p300":{"L":10,"steps":[[0,"Основание обеспылено, концентрат разведён водой"],[0.8,"Sika Primer P 300: нанесение валиком без луж"],[5,"Грунт впитывается в поры и укрепляет поверхность"],[7.4,"Высыхание ≈ 2 ч до отлипа, далее клей / наливной пол"]]},"p310":{"L":10,"steps":[[0,"Основание обеспылено, концентрат разведён водой"],[0.8,"Sika Primer P 310: нанесение валиком без луж"],[5,"Грунт впитывается в поры и укрепляет поверхность"],[7.4,"Высыхание ≈ 2 ч до отлипа, далее клей / наливной пол"]]},"p333":{"L":10,"steps":[[0,"Основание обеспылено, концентрат разведён водой"],[0.8,"Sika Primer P 333: нанесение валиком без луж"],[5,"Грунт впитывается в поры и укрепляет поверхность"],[7.4,"Высыхание ≈ 2 ч до отлипа, далее клей / наливной пол"]]},"p3n":{"L":10,"steps":[[0,"Шов очищен, установлен уплотнительный шнур"],[1,"Sika Primer-3N кистью по кромкам шва"],[4.2,"Выдержка 30 мин – 8 ч"],[5.4,"Герметик Sikaflex по загрунтованным кромкам"]]}};
 const SOURCES = [
  ["Sika: новый завод в Усть-Каменогорске (апрель 2025)","https://www.sika.com/en/media/media-releases/2025/sika-opens-new-plant-in-kazakhstan.html"],
  ["Sika переносит производство в Алматы на новую площадку (2017)","https://cemnet.com/News/story/161689/sika-relocates-kazakh-production-unit-to-larger-site.html"],
@@ -594,7 +601,9 @@ function openP(id){
    <div class="d-head" style="--gc:var(${gc})"><div class="pic3d">${pkgSVG(p,1)}</div>
     <div><span class="chip" style="--gc:var(${gc})">${GROUPS[p.g].n}</span><h3 id="dTitle" style="margin-top:6px">${esc(p.n)}</h3>${p.o?`<div class="old mono" style="font-size:12px;color:var(--ink-2)">ранее: ${esc(p.o)}</div>`:""}<p>${esc(p.u)}</p>
     <div class="price" style="font-size:22px;margin-top:10px">${priceTxt(p)} <small>${p.p?`≈ ${fmt(perKg(p))} ₸ за ${p.unit||"кг"} · розница KZ`:""}${p.extra?" · "+esc(p.extra):""}</small></div></div></div>
-   <div class="d-sec v3d-wrap" style="--gc:var(${gc})"><h5>3D-анатомия: как и куда наносить</h5><div class="v3d big" data-v="${p.id}"><i class="prog"></i><span class="drag-hint">↔ потяните, чтобы повернуть</span></div><ol class="v3d-steps">${window.v3dSteps?window.v3dSteps(p.id):""}</ol><p class="anat-note">Схематичная реконструкция по техкарте. Толщины слоёв показаны крупнее для наглядности.</p></div>
+   <div class="d-sec v3d-wrap" style="--gc:var(${gc})"><h5>3D-анатомия: как и куда наносить</h5><div class="vstage" id="vstage"><video id="vid" src="v/${p.id}.mp4" poster="v/${p.id}.jpg" autoplay muted loop playsinline preload="auto" aria-label="3D-анимация нанесения ${esc(p.n)}"></video></div>
+     <div class="vbar"><button class="btn" id="mode3d" type="button">Интерактивный 3D</button><button class="btn" id="vplay" type="button">Пауза</button></div>
+     <ol class="v3d-steps" id="vsteps">${(VINFO[p.id]?VINFO[p.id].steps:[]).map(s=>`<li data-t="${s[0]}">${esc(s[1])}</li>`).join("")}</ol><p class="anat-note">Схематичная реконструкция по техкарте. Толщины слоёв показаны крупнее для наглядности.</p></div>
    <div class="d-sec"><h5>Разрез нанесения</h5><div class="xsec">${xsec(p)}</div></div>
    <div class="d-grid"><div class="d-sec"><h5>Технические характеристики</h5><table class="spec">${Object.entries(sp).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</table></div>
     <div class="d-sec"><h5>Состав сухой смеси (схема, % по массе)</h5><div class="comp">${p.comp.map((c,i)=>`<span style="width:${c[1]}%;background:${cols[i%cols.length]};animation-delay:${i*120}ms">${c[1]>=12?c[1]+"%":""}</span>`).join("")}</div>
@@ -604,6 +613,15 @@ function openP(id){
   try{history.replaceState(null,"","#p-"+p.id)}catch(_){}
   $("#drawer").hidden=false; document.body.style.overflow="hidden"; $("#closeD").focus(); window.v3dScan&&window.v3dScan();
   $("#closeD").onclick=closeD;
+  const vid=$("#vid"),stg=$("#vstage"),steps=[...document.querySelectorAll("#vsteps li")];
+  const mark=t=>{let k=0;steps.forEach((li,i)=>{if(t>=+li.dataset.t)k=i});steps.forEach((li,i)=>li.classList.toggle("now",i===k))};
+  vid.addEventListener("timeupdate",()=>mark(vid.currentTime));
+  steps.forEach(li=>li.addEventListener("click",()=>{if(vid.isConnected){vid.currentTime=+li.dataset.t+.05;vid.play().catch(()=>{})}}));
+  const p0=vid.play();if(p0&&p0.catch)p0.catch(()=>{});
+  $("#vplay").onclick=e=>{if(vid.paused){vid.play().catch(()=>{});e.target.textContent="Пауза"}else{vid.pause();e.target.textContent="Смотреть"}};
+  const to3d=()=>{if(!document.documentElement.classList.contains("webgl"))return;stg.innerHTML=`<div class="v3d big" data-v="${p.id}"><i class="prog"></i><span class="drag-hint">↔ потяните, чтобы повернуть</span></div>`;$("#mode3d").hidden=true;$("#vplay").hidden=true;window.v3dScan&&window.v3dScan()};
+  $("#mode3d").onclick=to3d;if(!document.documentElement.classList.contains("webgl"))$("#mode3d").hidden=true;
+  vid.addEventListener("error",()=>{if(document.documentElement.classList.contains("webgl"))to3d();else stg.innerHTML='<p class="na" style="padding:16px">Видео не загрузилось. Обновите страницу.</p>'});
 }
 function closeD(){ $("#drawer").hidden=true; document.body.style.overflow=""; try{history.replaceState(null,"",location.pathname+location.search)}catch(_){} }
 $("#drawer").addEventListener("click",e=>{if(e.target.id==="drawer")closeD()});
@@ -697,7 +715,13 @@ function rule(len=1.8){const g=new T.Group();box(len,.1,.025,std(0xc9cdd2,{metal
 function powerTrowel(){const g=new T.Group(),s=steel();mesh(new T.TorusGeometry(.42,.02,8,40),std(0xd9b21c,{metalness:.4,roughness:.4}),g,0,.07,0).rotation.x=Math.PI/2;const blades=new T.Group();g.add(blades);for(let i=0;i<4;i++){const b=box(.36,.008,.1,s,blades,0,.02,0);b.position.x=Math.cos(i*Math.PI/2)*.2;b.position.z=Math.sin(i*Math.PI/2)*.2;b.rotation.y=-i*Math.PI/2}cyl(.06,.08,.18,std(0xd9b21c,{metalness:.3,roughness:.5}),g,0,.16,0);box(.16,.1,.12,std(0x333,{roughness:.6}),g,0,.3,0);const h=cyl(.014,.014,1.2,s,g,0,.62,-.42);h.rotation.x=-.75;box(.5,.02,.02,s,g,0,.98,-.86);g.userData.blades=blades;return g}
 function spikeRoller(){const g=new T.Group();const c=cyl(.05,.05,.5,std(0x444,{roughness:.6}),g,0,0,0);c.rotation.z=Math.PI/2;const sm=std(0x999,{metalness:.6,roughness:.4});for(let i=0;i<11;i++)for(let k=0;k<8;k++){const a=k/8*Math.PI*2;const sp=cyl(.002,.006,.05,sm,g,-.22+i*.044,Math.cos(a)*.07,Math.sin(a)*.07,4);sp.rotation.x=a+Math.PI/2}const p=cyl(.012,.012,1.2,steel(),g,0,.55,-.25);p.rotation.x=-.45;g.userData.drum=c;return g}
 function gun(){const g=new T.Group(),m=std(0xc23a2b,{roughness:.4,metalness:.3});const b=cyl(.03,.03,.3,std(0xdedad2,{roughness:.5}),g,0,0,0);b.rotation.z=Math.PI/2;const n=cyl(.002,.014,.1,std(0xf1efe8,{roughness:.4}),g,.2,0,0);n.rotation.z=-Math.PI/2;box(.04,.12,.03,m,g,-.12,-.07,0);box(.03,.1,.025,m,g,-.06,-.07,0);return g}
-function wheel(){const g=new T.Group();const tyre=mesh(new T.TorusGeometry(.32,.12,14,40),std(0x1b1b1d,{roughness:.85}),g);const rim=cyl(.25,.25,.2,std(0xa9adb2,{metalness:.85,roughness:.3}),g,0,0,0,28);rim.rotation.x=Math.PI/2;return g}
+function wheel(){const g=new T.Group();const spin=new T.Group();g.add(spin);const rub=std(0x141416,{roughness:.92,map:tex("rubber",[6,1]),bumpMap:tex("rubber",[6,1]),bumpScale:.03});
+  const tyre=cyl(.44,.44,.32,rub,spin,0,0,0,40);tyre.rotation.x=Math.PI/2;
+  const side=std(0x1c1c1f,{roughness:.8});[.165,-.165].forEach(z=>{const r=mesh(new T.TorusGeometry(.36,.07,10,40),side,spin,0,0,z)});
+  const rimM=std(0xb4b8bd,{metalness:.9,roughness:.25});const rim=cyl(.27,.27,.3,rimM,spin,0,0,0,32);rim.rotation.x=Math.PI/2;
+  for(let i=0;i<5;i++){const sp=box(.05,.42,.02,rimM,spin,0,0,.16);sp.rotation.z=i*Math.PI/2.5}const hub=cyl(.07,.07,.34,std(0x666a70,{metalness:.8,roughness:.3}),spin,0,0,0,16);hub.rotation.x=Math.PI/2;
+  g.userData.spin=spin;return g}
+function jackhammer(){const g=new T.Group();const body=cyl(.07,.08,.55,std(0xd23b2a,{roughness:.45,metalness:.3}),g,0,.45,0);cyl(.02,.02,.3,steel(),g,0,.05,0,10);const hb=cyl(.025,.025,.45,std(0x222,{roughness:.6}),g,0,.75,0);hb.rotation.z=Math.PI/2;return g}
 
 /* ---------- scene base ---------- */
 function base(){
@@ -787,20 +811,23 @@ A.road=(c,p)=>{
   const cover=cyl(.4,.4,.05,iron,frame,0,.03,0,40);for(let i=0;i<7;i++)box(.6,.012,.03,std(0x3a3c40,{metalness:.6,roughness:.5}),frame,0,.06,-.27+i*.09);
   const pm=prodMat(p);const fills=[[0,.56,1.3,.18],[0,-.56,1.3,.18],[.56,0,.18,.94],[-.56,0,.18,.94]].map(([x,z,w,d])=>gbox(w,th-.07,d,pm,G,"y",x,.06,z));
   const bk=bucket(0xd8dde2);G.add(bk);bk.traverse(shadowOn);
-  const stream=new T.Mesh(new T.CylinderGeometry(.03,.05,1,10,1,true),std(0x9a9890,{roughness:.6}));G.add(stream);
-  const wh=wheel();G.add(wh);wh.traverse(shadowOn);
+  const stream=new T.Mesh(new T.CylinderGeometry(.03,.05,1,10,1,true),pm);G.add(stream);
+  const wh=wheel();G.add(wh);wh.traverse(shadowOn);const jh=jackhammer();G.add(jh);jh.traverse(shadowOn);
+  const rub=[];const rm=texMat("broken",[.3,.3]);for(let i=0;i<22;i++){const d=mesh(new T.DodecahedronGeometry(.03+rnd()*.05,0),rm,G,(rnd()-.5)*1.2,.08,(rnd()-.5)*1.2);d.userData.r=rnd();rub.push(d)}
   const L=10;
   return {L,G,cam:{tg:V(0,.25,0),r:5,az:.6,el:.55,fov:32},
-    steps:[[0,"Вырубка разрушенного бетона вокруг люка, глубина ≥ 20 мм"],[1.5,"Рама люка выставляется в проектное положение"],[3,`Заливка ${short(p)} вокруг рамы, ${thk(p)}`],[7.2,"Через ≈ 1 ч открывают движение"]],
+    steps:[[0,"Вырубка разрушенного бетона и асфальта вокруг люка, глубина 20–50 мм"],[1.5,"Рама люка выставляется в проектное положение"],[3,`Наливной ${short(p)} заливается вокруг рамы, ${thk(p)}`],[7.2,"Через ≈ 1 ч по люку открывают движение"]],
     labels:[[G,V(-1.3,th,-1),"Асфальт"],[G,V(.1,.2,-.46),"Рама люка"],[G,V(.6,.2,.56),`${short(p)} · ${thk(p)}`,4],[G,V(1.2,th,1.3),"Где: "+(p.where||"")]],
     update(t){
       frame.position.y=lerp(.75,th-.1,ss(ph(t,1.5,2.8)));frame.visible=t>1.4;
-      fills.forEach((f,i)=>sc(f,1,ss(ph(t,3.1+i*.8,4+i*.8)),1));
+      const fk=ss(ph(t,3.2,6.4));fills.forEach(f=>sc(f,1,fk,1));
+      const jk=park(jh,t,-.5,1.5);const ja=t*30;jh.position.set(lerp(1.8,(Math.sin(t*2.2))*.45,jk),lerp(.6,.12+Math.abs(Math.sin(ja))*.03,jk),lerp(1.4,.5,jk));jh.rotation.z=Math.sin(ja)*.03;
+      rub.forEach(d=>{d.visible=t<1.6||t<3.2&&d.userData.r<.3;d.position.y=.08+(t<1.4?Math.abs(Math.sin(t*20+d.userData.r*9))*.04:0)});
       const k=park(bk,t,2.6,7);const pour=ph(t,3,6.6);const ang=lerp(0,1.9,ss(ph(t,2.9,3.4)))*(1-ss(ph(t,6.4,6.9)));
       const ox=lerp(-.56,.56,pour>.5?1:0),oz=lerp(.56,-.56,(pour*2)%1);
       bk.position.set(lerp(-2,-.2,k),lerp(.4,.95,k),lerp(1.8,.3,k));bk.rotation.set(0,0,-ang);
       const on=ang>1.2&&t<6.6;stream.visible=on;if(on){const lip=V(bk.position.x+.15,bk.position.y+.08,bk.position.z);const tgt=V(.35,.15,.45);const mid=lip.clone().add(tgt).multiplyScalar(.5);stream.position.copy(mid);stream.scale.set(1,lip.distanceTo(tgt),1);stream.lookAt(tgt);stream.rotateX(Math.PI/2)}
-      const wk=ph(t,7.4,9.8);wh.visible=t>7.3;wh.position.set(lerp(-2.6,2.6,wk),th+.44,0);wh.rotation.set(0,0,-wk*16);wh.rotation.y=0;
+      const wk=ss(ph(t,7.4,9.8));wh.visible=t>7.3;const wx=lerp(-2.4,2.4,wk);wh.position.set(wx,th+.44,0);wh.userData.spin.rotation.z=-(wx+2.4)/.44;
     }};
 };
 
@@ -1092,7 +1119,8 @@ function getView(el){let v=views.get(el);if(!v){const p=P.find(x=>x.id===el.data
 const tmp=new T.Vector3();let W0=0,H0=0,R2=null,cv2=null;
 function setupR(r){r.setPixelRatio(Math.min(window.devicePixelRatio||1,MOBILE?1.5:1.75));r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.08;r.shadowMap.enabled=true;r.shadowMap.type=T.PCFSoftShadowMap;r.setClearColor(0,0);r.localClippingEnabled=true;return r}
 function drive(v,el,rw,rh,T0){
-  const t=RM?v.L*.82:(T0+v.off)%v.L;v.update(t);
+  const FT=window.__v3dT;if(FT!=null){v.off=0;T0=FT}
+  const t=FT!=null?FT%v.L:RM?v.L*.82:(T0+v.off)%v.L;v.update(t);
   const cc=v.c,az=cc.az+(RM?0:Math.sin(T0*.25+v.off)*.16)+(v.dAz||0),elv=cl(cc.el+(v.dEl||0),-.6,1.3);
   v.cam.aspect=rw/rh;const rr=cc.r*(v.cam.aspect<1.2?1.22:1)*(v.big?.92:1);
   v.cam.position.set(cc.tg.x+rr*Math.cos(elv)*Math.sin(az),cc.tg.y+rr*Math.sin(elv),cc.tg.z+rr*Math.cos(elv)*Math.cos(az));v.cam.lookAt(cc.tg);v.cam.updateProjectionMatrix();
@@ -1121,6 +1149,7 @@ function frame(now){
   }
 }
 window.v3dScan();requestAnimationFrame(frame);
+window.v3dInfo=id=>{const p=P.find(x=>x.id===id);if(!p)return null;const v=makeView(p,true);const r={L:v.L,steps:v.steps.map(s=>[s[0],s[1]])};disposeView(v);return r};
 window.v3dSteps=id=>{const p=P.find(x=>x.id===id);if(!p)return"";const v=makeView(p,true);const html=v.steps.map(s=>`<li>${s[1]}</li>`).join("");disposeView(v);return html};
 })();
 
