@@ -188,14 +188,10 @@ footer a{word-break:break-all}
 
 
 /* ---------- 3D-анатомия ---------- */
-#gl{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:-1}
 .v3d{position:absolute;inset:0;overflow:hidden;display:none}
 .webgl .v3d{display:block}
-.webgl .card{background:transparent}
-.webgl .card .body{background:var(--paper)}
-.webgl .card .pic{height:250px;background:linear-gradient(180deg,transparent 60%,color-mix(in srgb,var(--gc) 10%,transparent));border-bottom-color:var(--line)}
-.webgl .card .pic>svg{display:none}
-.webgl .card:hover .pic svg{transform:none}
+.play3d{display:none;position:absolute;right:8px;bottom:8px;font:700 10px var(--f-mono);letter-spacing:.06em;background:var(--ink);color:var(--paper);padding:3px 7px;border-radius:3px}
+.webgl .play3d{display:block}
 .lb{position:absolute;left:0;top:0;pointer-events:none;font:600 10.5px/1.2 var(--f-body);color:var(--ink);white-space:nowrap;transition:opacity .25s;z-index:2}
 .lb::before{content:"";position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--hot);box-shadow:0 0 0 2px var(--paper)}
 .lb{padding:2px 6px;margin:-26px 0 0 10px;background:color-mix(in srgb,var(--paper) 88%,transparent);border:1px solid var(--ink);border-radius:3px}
@@ -212,7 +208,9 @@ footer a{word-break:break-all}
 .v3d.big{position:relative;height:clamp(300px,52vh,460px);border:1.5px solid var(--ink);background:radial-gradient(ellipse at 50% 85%,color-mix(in srgb,var(--gc) 14%,var(--bg)),var(--bg) 70%);margin-bottom:6px}
 .v3d.big .lb{font-size:12px}
 .v3d.big .cap{font-size:13px;bottom:10px;left:10px;right:10px}
-.gl2{position:absolute;inset:0;width:100%;height:100%;display:block}
+.gl2{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab}
+.gl2:active{cursor:grabbing}
+.drag-hint{position:absolute;right:10px;top:10px;z-index:2;font:600 10.5px var(--f-mono);color:var(--ink-2);background:color-mix(in srgb,var(--paper) 85%,transparent);padding:3px 7px;border-radius:3px;pointer-events:none}
 .v3d-steps{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
 .v3d-steps li{font-size:12px;border:1px solid var(--line);padding:3px 8px;border-radius:999px;color:var(--ink-2);counter-increment:vs}
 .v3d-steps{counter-reset:vs}.v3d-steps li::before{content:counter(vs) ". ";font-family:var(--f-mono)}
@@ -225,7 +223,16 @@ footer a{word-break:break-all}
 @media (max-width:560px){
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .kpi:nth-child(2){border-right:0}.kpi:nth-child(-n+2){border-bottom:1px solid var(--line)}
-  .d-head{grid-template-columns:minmax(0,1fr)}
+  .sheet .x{float:none;display:block;margin:0 0 8px auto;padding:6px 12px}
+  .d-head{grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:start;margin-bottom:12px}
+  .d-head .pic3d{height:100px;perspective:400px}.d-head .pic3d svg{height:96px}
+  .d-head h3{font-size:19px}.d-head p{font-size:12.5px;line-height:1.4;margin-top:4px}
+  .d-head .price{font-size:17px!important;margin-top:6px!important}
+  .d-head .price small{display:block;font-size:10.5px}
+  .v3d.big{height:clamp(260px,78vw,360px)}
+  .v3d.big .lb{font-size:10px;padding:1px 5px}
+  .v3d.big .cap{font-size:11.5px;left:6px;right:6px;bottom:6px}
+  .v3d-steps li{font-size:11px}
   .bar-row{grid-template-columns:104px minmax(0,1fr) 58px}
   .callouts{display:none}
 }
@@ -279,7 +286,7 @@ footer a{word-break:break-all}
   <section id="catalog">
     <div class="sec-head">
       <div><div class="eyebrow">Анатомия ассортимента</div><h2>Каталог по группам</h2></div>
-      <p>Над каждым продуктом идёт 3D-анимация: где применяется, каким инструментом и в каком порядке наносится. Нажмите на карточку, чтобы открыть большую сцену с шагами, разрезом, составом, техданными и источником цены.</p>
+      <p>Нажмите на мешок: откроется страница продукта, где сама запускается 3D-анимация. Она показывает, куда наносить, каким инструментом и в каком порядке. Ниже на странице разрез, состав, техданные и источник цены. На телефоне сцену можно поворачивать пальцем.</p>
     </div>
     <div class="filters" id="filters"></div>
     <div id="groups"></div>
@@ -543,7 +550,7 @@ function filters(){
 function card(p){
   const pk=perKg(p);
   return `<button class="card" data-p="${p.id}" style="--gc:var(${GROUPS[p.g].c})">
-   <div class="pic">${p.star?'<span class="star" style="z-index:3">Хит</span>':""}${pkgSVG(p)}<div class="v3d" data-v="${p.id}"><i class="prog"></i></div></div>
+   <div class="pic">${p.star?'<span class="star" style="z-index:3">Хит</span>':""}${pkgSVG(p)}<span class="play3d" aria-hidden="true">3D ▶</span></div>
    <div class="body"><span class="chip">${GROUPS[p.g].n}</span><h4>${esc(p.n)}</h4>${p.o?`<span class="old">${esc(p.o)}</span>`:""}<p class="use">${esc(p.u)}</p>
    <div class="meta"><div class="price">${priceTxt(p)}${pk?`<small>≈ ${fmt(pk)} ₸/${p.unit||"кг"}</small>`:""}</div><div class="pack">${p.pk==="bag"?"мешок":p.pk==="kit"?"комплект":p.pk==="can"?"канистра":"ведро"}<br>${p.w} ${p.unit||"кг"}</div></div></div></button>`;
 }
@@ -587,17 +594,18 @@ function openP(id){
    <div class="d-head" style="--gc:var(${gc})"><div class="pic3d">${pkgSVG(p,1)}</div>
     <div><span class="chip" style="--gc:var(${gc})">${GROUPS[p.g].n}</span><h3 id="dTitle" style="margin-top:6px">${esc(p.n)}</h3>${p.o?`<div class="old mono" style="font-size:12px;color:var(--ink-2)">ранее: ${esc(p.o)}</div>`:""}<p>${esc(p.u)}</p>
     <div class="price" style="font-size:22px;margin-top:10px">${priceTxt(p)} <small>${p.p?`≈ ${fmt(perKg(p))} ₸ за ${p.unit||"кг"} · розница KZ`:""}${p.extra?" · "+esc(p.extra):""}</small></div></div></div>
-   <div class="d-sec v3d-wrap" style="--gc:var(${gc})"><h5>3D-анатомия: как и куда наносить</h5><div class="v3d big" data-v="${p.id}"><i class="prog"></i></div><ol class="v3d-steps">${window.v3dSteps?window.v3dSteps(p.id):""}</ol><p class="anat-note">Схематичная реконструкция по техкарте. Толщины слоёв показаны крупнее для наглядности.</p></div>
+   <div class="d-sec v3d-wrap" style="--gc:var(${gc})"><h5>3D-анатомия: как и куда наносить</h5><div class="v3d big" data-v="${p.id}"><i class="prog"></i><span class="drag-hint">↔ потяните, чтобы повернуть</span></div><ol class="v3d-steps">${window.v3dSteps?window.v3dSteps(p.id):""}</ol><p class="anat-note">Схематичная реконструкция по техкарте. Толщины слоёв показаны крупнее для наглядности.</p></div>
    <div class="d-sec"><h5>Разрез нанесения</h5><div class="xsec">${xsec(p)}</div></div>
    <div class="d-grid"><div class="d-sec"><h5>Технические характеристики</h5><table class="spec">${Object.entries(sp).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</table></div>
     <div class="d-sec"><h5>Состав сухой смеси (схема, % по массе)</h5><div class="comp">${p.comp.map((c,i)=>`<span style="width:${c[1]}%;background:${cols[i%cols.length]};animation-delay:${i*120}ms">${c[1]>=12?c[1]+"%":""}</span>`).join("")}</div>
      <div class="comp-leg">${p.comp.map((c,i)=>`<span><i style="display:inline-block;width:9px;height:9px;background:${cols[i%cols.length]};margin-right:4px"></i>${esc(c[0])} ${c[1]}%</span>`).join("")}</div>
      <h5>Порядок работ</h5><ol class="steps">${p.steps.map(s=>`<li><span>${esc(s)}</span></li>`).join("")}</ol></div></div>
    <div class="d-sec"><h5>Источник цены</h5><p class="src">${esc(p.src)}. Пропорции состава схематичные: производитель не раскрывает рецептуру.</p></div>`;
+  try{history.replaceState(null,"","#p-"+p.id)}catch(_){}
   $("#drawer").hidden=false; document.body.style.overflow="hidden"; $("#closeD").focus(); window.v3dScan&&window.v3dScan();
   $("#closeD").onclick=closeD;
 }
-function closeD(){ $("#drawer").hidden=true; document.body.style.overflow=""; }
+function closeD(){ $("#drawer").hidden=true; document.body.style.overflow=""; try{history.replaceState(null,"",location.pathname+location.search)}catch(_){} }
 $("#drawer").addEventListener("click",e=>{if(e.target.id==="drawer")closeD()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#drawer").hidden)closeD()});
 
@@ -612,6 +620,8 @@ function table(){
 buildHero(); $("#bag3d").classList.add("exploded"); kpis(); map(); infographics(); filters();
 try{const g=localStorage.getItem("sika-g");if(g&&(g==="all"||GROUPS[g])){active=g;document.querySelectorAll("[data-g]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.g===g))}}catch(_){}
 renderGroups(); table();
+{const m=/^#p-([\w-]+)$/.exec(location.hash);if(m)setTimeout(()=>openP(m[1]),50)}
+addEventListener("hashchange",()=>{const m=/^#p-([\w-]+)$/.exec(location.hash);if(m)openP(m[1])});
 let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{const ex=$("#bag3d").classList.contains("exploded");buildHero();$("#bag3d").classList.toggle("exploded",ex)},200)});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -620,13 +630,8 @@ let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{const 
 (function(){
 if(!window.THREE) return;
 const T=THREE;
-let R;
-try{const cv=document.createElement("canvas");cv.id="gl";cv.setAttribute("aria-hidden","true");document.body.appendChild(cv);
-  R=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true,powerPreference:"high-performance"});}catch(e){return}
-if(!R.getContext()) return;
-R.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));
-R.outputEncoding=T.sRGBEncoding;R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.08;
-R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;R.setClearColor(0x000000,0);R.localClippingEnabled=true;R.autoClear=false;
+{let ok=false;try{const tc=document.createElement("canvas");ok=!!(tc.getContext("webgl")||tc.getContext("experimental-webgl"))}catch(e){}if(!ok)return}
+const MOBILE=matchMedia("(max-width:700px), (pointer:coarse)").matches;
 document.documentElement.classList.add("webgl");
 const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -698,7 +703,7 @@ function wheel(){const g=new T.Group();const tyre=mesh(new T.TorusGeometry(.32,.
 function base(){
   const s=new T.Scene(),cam=new T.PerspectiveCamera(32,1.4,.05,60);
   s.add(new T.HemisphereLight(0xf3f6ff,0x5a5246,.72));
-  const d=new T.DirectionalLight(0xfff1dc,1.35);d.position.set(3.5,6,5);d.castShadow=true;d.shadow.mapSize.set(1024,1024);
+  const d=new T.DirectionalLight(0xfff1dc,1.35);d.position.set(3.5,6,5);d.castShadow=true;d.shadow.mapSize.set(MOBILE?512:1024,MOBILE?512:1024);
   Object.assign(d.shadow.camera,{left:-3.5,right:3.5,top:3.5,bottom:-3.5,near:.5,far:25});d.shadow.bias=-.0004;d.shadow.normalBias=.02;s.add(d);s.add(d.target);
   const f=new T.DirectionalLight(0xbcd3ff,.4);f.position.set(-5,2.5,-1);s.add(f);
   const gp=new T.Mesh(new T.PlaneGeometry(14,14),new T.ShadowMaterial({opacity:.22}));gp.rotation.x=-Math.PI/2;gp.receiveShadow=true;s.add(gp);
@@ -1085,12 +1090,12 @@ window.v3dScan=function(){
 function getView(el){let v=views.get(el);if(!v){const p=P.find(x=>x.id===el.dataset.v);if(!p)return null;v=makeView(p,el.classList.contains("big"));views.set(el,v)}ensureDom(v,el);return v}
 
 const tmp=new T.Vector3();let W0=0,H0=0,R2=null,cv2=null;
-function setupR(r){r.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.08;r.shadowMap.enabled=true;r.shadowMap.type=T.PCFSoftShadowMap;r.setClearColor(0,0);r.localClippingEnabled=true;return r}
+function setupR(r){r.setPixelRatio(Math.min(window.devicePixelRatio||1,MOBILE?1.5:1.75));r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.08;r.shadowMap.enabled=true;r.shadowMap.type=T.PCFSoftShadowMap;r.setClearColor(0,0);r.localClippingEnabled=true;return r}
 function drive(v,el,rw,rh,T0){
   const t=RM?v.L*.82:(T0+v.off)%v.L;v.update(t);
-  const cc=v.c,az=cc.az+(RM?0:Math.sin(T0*.25+v.off)*.16);
+  const cc=v.c,az=cc.az+(RM?0:Math.sin(T0*.25+v.off)*.16)+(v.dAz||0),elv=cl(cc.el+(v.dEl||0),-.6,1.3);
   v.cam.aspect=rw/rh;const rr=cc.r*(v.cam.aspect<1.2?1.22:1)*(v.big?.92:1);
-  v.cam.position.set(cc.tg.x+rr*Math.cos(cc.el)*Math.sin(az),cc.tg.y+rr*Math.sin(cc.el),cc.tg.z+rr*Math.cos(cc.el)*Math.cos(az));v.cam.lookAt(cc.tg);v.cam.updateProjectionMatrix();
+  v.cam.position.set(cc.tg.x+rr*Math.cos(elv)*Math.sin(az),cc.tg.y+rr*Math.sin(elv),cc.tg.z+rr*Math.cos(elv)*Math.cos(az));v.cam.lookAt(cc.tg);v.cam.updateProjectionMatrix();
   return t;
 }
 function overlay(v,el,rw,rh,t){
@@ -1106,17 +1111,13 @@ function frame(now){
   const open=!document.getElementById("drawer").hidden;
   if(open){
     const el=document.querySelector("#sheet .v3d");if(el){
-      if(!R2){cv2=document.createElement("canvas");cv2.className="gl2";try{R2=setupR(new T.WebGLRenderer({canvas:cv2,antialias:true,alpha:true}))}catch(e){R2=null}}
+      if(!R2){cv2=document.createElement("canvas");cv2.className="gl2";try{R2=setupR(new T.WebGLRenderer({canvas:cv2,antialias:!MOBILE||devicePixelRatio<2,alpha:true}))}catch(e){R2=null}
+        if(R2){let d=null;cv2.addEventListener("pointerdown",e=>{d={x:e.clientX,y:e.clientY,id:e.pointerId}});
+          addEventListener("pointermove",e=>{if(!d||e.pointerId!==d.id)return;const v=views.get(cv2.parentElement);if(!v)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;if(Math.abs(dx)<2&&Math.abs(dy)<2)return;v.dAz=(v.dAz||0)-dx*.008;if(e.pointerType==="mouse")v.dEl=(v.dEl||0)+dy*.006;d.x=e.clientX;d.y=e.clientY;const h=cv2.parentElement.querySelector(".drag-hint");if(h)h.hidden=true});
+          addEventListener("pointerup",()=>{d=null});addEventListener("pointercancel",()=>{d=null})}}
       if(R2){if(cv2.parentElement!==el)el.prepend(cv2);const rw=el.clientWidth,rh=el.clientHeight;if(cv2._w!==rw||cv2._h!==rh){R2.setSize(rw,rh,false);cv2._w=rw;cv2._h=rh}
         const v=getView(el);if(v){const t=drive(v,el,rw,rh,T0);R2.render(v.s,v.cam);overlay(v,el,rw,rh,t)}}}
     return;
-  }
-  const w=document.documentElement.clientWidth,h=window.innerHeight;if(w!==W0||h!==H0){W0=w;H0=h;R.setSize(w,h,false)}
-  R.setScissorTest(false);R.clear();R.setScissorTest(true);
-  for(const el of vis){
-    const r=el.getBoundingClientRect();if(r.bottom<0||r.top>h||r.width<4||r.height<4)continue;
-    const v=getView(el);if(!v)continue;const t=drive(v,el,r.width,r.height,T0);
-    R.setViewport(r.left,h-r.bottom,r.width,r.height);R.setScissor(r.left,h-r.bottom,r.width,r.height);R.render(v.s,v.cam);overlay(v,el,r.width,r.height,t);
   }
 }
 window.v3dScan();requestAnimationFrame(frame);
