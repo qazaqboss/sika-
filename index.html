@@ -1,0 +1,582 @@
+<title>Атлас смесей Sika · Казахстан</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: атлас-справочник — герой с разборной моделью мешка, далее карта заводов, инфографика, каталог-«анатомия» по группам, карточки раскрываются в панель с разрезом */
+:root{
+  --bg:#eceeea; --paper:#f7f8f5; --ink:#141b22; --ink-2:#4a5560; --line:#c9cec7; --grid:#dfe3dc;
+  --accent:#f0b400; --accent-ink:#1a1400; --hot:#c92a2a;
+  --g-repair:#b5502b; --g-water:#2a6db0; --g-grout:#6b4fb3; --g-tile:#13857a; --g-floor:#a37a10; --g-primer:#4b8a2a; --g-plaster:#82695a;
+  --kraft:#c9a877; --kraft-2:#b08d5c; --powder:#d8d6cf;
+  --f-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --f-body:"Golos Text","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1418; --paper:#161d22; --ink:#e7ebe6; --ink-2:#9aa6ae; --line:#2c363d; --grid:#1e272d;
+  --accent:#f5c022; --accent-ink:#1a1400; --hot:#ff6b5e;
+  --g-repair:#e07a50; --g-water:#5c9fe6; --g-grout:#9a83e6; --g-tile:#3bbfae; --g-floor:#d9ad3c; --g-primer:#7fc257; --g-plaster:#b39a89;
+  --kraft:#a98a5e; --kraft-2:#8d7149; --powder:#9d9b94; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1418; --paper:#161d22; --ink:#e7ebe6; --ink-2:#9aa6ae; --line:#2c363d; --grid:#1e272d;
+  --accent:#f5c022; --accent-ink:#1a1400; --hot:#ff6b5e;
+  --g-repair:#e07a50; --g-water:#5c9fe6; --g-grout:#9a83e6; --g-tile:#3bbfae; --g-floor:#d9ad3c; --g-primer:#7fc257; --g-plaster:#b39a89;
+  --kraft:#a98a5e; --kraft-2:#8d7149; --powder:#9d9b94; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:clamp(22px,3vw,32px);font-weight:700}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+section{padding-block:48px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px 24px;margin-bottom:24px;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.sec-head p{margin:0;max-width:60ch;color:var(--ink-2)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* ---------- HERO ---------- */
+.hero{padding-block:40px 24px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;align-items:center}
+.hero h1{font-size:clamp(34px,5.6vw,68px);font-weight:800;letter-spacing:-.02em}
+.hero h1 span{background:var(--accent);color:var(--accent-ink);padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.hero .lead{font-size:17px;max-width:56ch;color:var(--ink-2);margin:18px 0 22px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1.5px solid var(--ink);background:var(--paper)}
+.kpi{padding:12px 14px;border-right:1px solid var(--line)}
+.kpi:last-child{border-right:0}
+.kpi b{display:block;font-family:var(--f-display);font-size:26px;line-height:1}
+.kpi small{font-size:12px;color:var(--ink-2)}
+.stage{position:relative;aspect-ratio:1/1;max-width:100%;perspective:1100px}
+.stage-note{position:absolute;left:0;bottom:0;font-family:var(--f-mono);font-size:11px;color:var(--ink-2)}
+.btn{font:600 13px var(--f-body);border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+.btn[aria-pressed="true"],.btn:hover{background:var(--ink);color:var(--paper)}
+
+/* exploded bag (CSS 3D) */
+.bag3d{position:absolute;inset:8% 14%;transform-style:preserve-3d;animation:spin 16s linear infinite}
+.stage:hover .bag3d{animation-play-state:paused}
+@keyframes spin{from{transform:rotateX(-14deg) rotateY(0)}to{transform:rotateX(-14deg) rotateY(360deg)}}
+.layer{position:absolute;left:50%;top:50%;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.2,.8,.2,1)}
+.face{position:absolute;backface-visibility:visible;display:flex;align-items:center;justify-content:center}
+/* sizes: W=200 D=80 H=300 */
+.L-outer .face{background:linear-gradient(180deg,var(--kraft),var(--kraft-2));border:1px solid rgba(0,0,0,.25)}
+.L-liner .face{background:rgba(220,230,240,.35);border:1px dashed rgba(60,90,120,.7)}
+.L-powder .face{background:radial-gradient(circle at 30% 30%,#e6e4dc,var(--powder));border:1px solid rgba(0,0,0,.15)}
+.L-fiber .face{background:repeating-linear-gradient(35deg,transparent 0 7px,rgba(40,40,40,.45) 7px 8px),repeating-linear-gradient(-50deg,transparent 0 11px,rgba(40,40,40,.35) 11px 12px);border:1px dotted rgba(0,0,0,.3)}
+.label-band{position:absolute;inset:auto 0 22% 0;height:34%;background:var(--accent);display:flex;flex-direction:column;justify-content:center;padding:0 14px;color:var(--accent-ink)}
+.label-band b{font-family:var(--f-display);font-size:22px;line-height:1}
+.label-band i{font-style:normal;font-family:var(--f-mono);font-size:10px}
+.exploded .L-outer{transform:translate3d(0,0,0) rotateY(0) translateZ(90px)}
+.exploded .L-liner{transform:translateZ(20px) scale(.92)}
+.exploded .L-powder{transform:translateZ(-40px) scale(.82)}
+.exploded .L-fiber{transform:translateZ(-100px) scale(.7)}
+.callouts{position:absolute;inset:0;pointer-events:none}
+.callout{position:absolute;font-family:var(--f-mono);font-size:11px;line-height:1.3;background:var(--paper);border:1px solid var(--ink);padding:5px 7px;max-width:170px;opacity:.95}
+.callout::before{content:"";position:absolute;width:28px;height:1px;background:var(--ink);top:50%}
+.callout.l::before{right:-29px}.callout.r::before{left:-29px}
+.callout b{color:var(--hot)}
+
+/* ---------- MAP ---------- */
+.map-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;align-items:start}
+.mapbox{background:var(--paper);border:1.5px solid var(--ink);padding:12px;overflow-x:auto}
+.mapbox svg{width:100%;height:auto;min-width:520px;display:block}
+.kz{fill:var(--bg);stroke:var(--ink);stroke-width:1.6}
+.city circle{fill:var(--ink-2)} .city text{fill:var(--ink-2);font:10px var(--f-body)}
+.plant .pulse{fill:none;stroke:var(--hot);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:pulse 2.4s ease-out infinite}
+.plant .core{fill:var(--hot);stroke:var(--paper);stroke-width:2}
+.plant text{font:700 12px var(--f-body);fill:var(--ink)} .plant .yr{font:600 10px var(--f-mono);fill:var(--hot)}
+.plant{cursor:pointer}
+@keyframes pulse{0%{transform:scale(.5);opacity:1}100%{transform:scale(2.6);opacity:0}}
+.route{fill:none;stroke:var(--hot);stroke-width:1.2;stroke-dasharray:4 5;opacity:.6;animation:dash 30s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-400}}
+.plants-list{display:grid;gap:10px}
+.plant-card{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--hot);padding:12px 14px;cursor:pointer}
+.plant-card.on{border-color:var(--ink);border-left-color:var(--hot);box-shadow:4px 4px 0 var(--ink)}
+.plant-card h3{font-size:15px;display:flex;justify-content:space-between;gap:8px}
+.plant-card p{margin:4px 0 0;font-size:13px;color:var(--ink-2)}
+.tag{display:inline-block;font:600 10px var(--f-mono);letter-spacing:.05em;text-transform:uppercase;border:1px solid currentColor;padding:1px 6px;border-radius:3px;margin:6px 4px 0 0}
+
+/* ---------- INFOGRAPHICS ---------- */
+.info-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+.panel{background:var(--paper);border:1.5px solid var(--ink);padding:18px;min-width:0}
+.panel h3{font-size:16px;margin-bottom:4px}
+.panel .sub{font-size:13px;color:var(--ink-2);margin:0 0 14px}
+.bars{display:grid;gap:5px}
+.bar-row{display:grid;grid-template-columns:150px minmax(0,1fr) 70px;align-items:center;gap:8px;font-size:12px}
+.bar-row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{height:14px;position:relative;background:var(--grid)}
+.bar-fill{position:absolute;top:0;bottom:0;transform-origin:left;animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes grow{from{transform:scaleX(0)}}
+.bar-row .v{text-align:right;font-family:var(--f-mono)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;margin-top:12px}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
+.range-chart svg{width:100%;height:auto;display:block}
+.range-chart text{font:11px var(--f-body);fill:var(--ink)}
+.range-chart .ax{font:10px var(--f-mono);fill:var(--ink-2)}
+
+/* ---------- CATALOG ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.filters .btn{display:inline-flex;align-items:center;gap:6px}
+.filters .btn i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.search{flex:1 1 220px;min-width:0;font:14px var(--f-body);padding:8px 14px;border:1.5px solid var(--ink);border-radius:999px;background:var(--paper);color:var(--ink)}
+.group-block{margin-bottom:36px}
+.group-title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.group-title h3{font-size:20px}
+.group-title .sw{width:16px;height:16px;border-radius:3px;align-self:center}
+.group-title p{margin:0;color:var(--ink-2);font-size:13px;flex:1 1 300px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--paper);border:1px solid var(--line);display:flex;flex-direction:column;cursor:pointer;position:relative;transition:transform .2s,box-shadow .2s;text-align:left;font:inherit;color:inherit;padding:0}
+.card:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink);border-color:var(--ink)}
+.card .pic{height:170px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 110%,color-mix(in srgb,var(--gc) 22%,transparent),transparent 65%)}
+.card .pic svg{height:150px;width:auto;transition:transform .5s}
+.card:hover .pic svg{transform:rotate(-4deg) scale(1.05)}
+.star{position:absolute;top:8px;left:8px;background:var(--accent);color:var(--accent-ink);font:700 10px var(--f-mono);padding:2px 7px;letter-spacing:.06em;text-transform:uppercase}
+.card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card h4{margin:0;font-family:var(--f-display);font-size:15px;font-weight:700;line-height:1.15}
+.card .old{font-family:var(--f-mono);font-size:11px;color:var(--ink-2)}
+.card .use{font-size:13px;margin:0;color:var(--ink-2)}
+.card .meta{margin-top:auto;display:flex;justify-content:space-between;align-items:end;gap:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.price{font-family:var(--f-mono);font-weight:600;font-size:15px}
+.price small{display:block;font-weight:400;font-size:11px;color:var(--ink-2)}
+.pack{font-family:var(--f-mono);font-size:12px;text-align:right;color:var(--ink-2)}
+.chip{font:600 10px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;padding:2px 6px;border-radius:3px;background:color-mix(in srgb,var(--gc) 18%,transparent);color:var(--gc);align-self:flex-start}
+.na{color:var(--ink-2);font-weight:400;font-size:13px}
+
+/* ---------- DETAIL DRAWER ---------- */
+.drawer{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end;background:rgba(10,14,18,.55)}
+.drawer[hidden]{display:none!important}
+.sheet{width:min(860px,100%);height:100%;overflow-y:auto;background:var(--paper);border-left:2px solid var(--ink);
+  padding-block:calc(20px + env(safe-area-inset-top,0px)) calc(28px + env(safe-area-inset-bottom,0px));
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));animation:slide .35s ease-out}
+@keyframes slide{from{transform:translateX(40px);opacity:.3}}
+.sheet .x{position:sticky;top:0;float:right;z-index:2}
+.d-head{display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;align-items:center;margin-bottom:18px}
+.d-head .pic3d{height:220px;display:flex;align-items:center;justify-content:center;perspective:700px}
+.d-head .pic3d svg{height:210px;width:auto;animation:wobble 6s ease-in-out infinite;transform-style:preserve-3d}
+@keyframes wobble{0%,100%{transform:rotateY(-22deg)}50%{transform:rotateY(22deg)}}
+.d-head h3{font-size:clamp(22px,3vw,30px)}
+.d-head p{margin:8px 0 0;color:var(--ink-2)}
+.d-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.spec{width:100%;border-collapse:collapse;font-size:13px}
+.spec td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.spec td:first-child{color:var(--ink-2);width:46%}
+.spec td:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.d-sec h5{font:700 12px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;margin:18px 0 8px;color:var(--ink-2)}
+.xsec svg{width:100%;height:auto;display:block;border:1px solid var(--line);background:var(--bg)}
+.xsec text{font:11px var(--f-body);fill:var(--ink)}
+.xsec .lyr{animation:build .8s cubic-bezier(.2,.8,.2,1) both;transform-box:fill-box;transform-origin:bottom}
+@keyframes build{from{transform:scaleY(0)}}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;font-size:13px}
+.steps li::before{content:counter(s);font:700 12px var(--f-mono);width:26px;height:26px;border:1.5px solid var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.comp{display:flex;height:22px;border:1px solid var(--ink);overflow:hidden}
+.comp span{display:flex;align-items:center;justify-content:center;font:600 10px var(--f-mono);color:#fff;white-space:nowrap;overflow:hidden;animation:grow .9s both;transform-origin:left}
+.comp-leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;margin-top:6px;color:var(--ink-2)}
+.src{font-size:12px;color:var(--ink-2);word-break:break-word}
+.notice{border:1.5px dashed var(--ink-2);padding:12px 14px;font-size:13px;color:var(--ink-2);background:var(--paper)}
+.notice b{color:var(--ink)}
+table.full{width:100%;border-collapse:collapse;font-size:13px;min-width:760px}
+table.full th{font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;text-align:left;padding:8px 6px;border-bottom:2px solid var(--ink);position:sticky;top:0;background:var(--paper)}
+table.full td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+table.full td.n{font-family:var(--f-mono);white-space:nowrap;text-align:right}
+table.full tr:hover td{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.tablebox{overflow-x:auto;max-height:640px;overflow-y:auto;border:1.5px solid var(--ink);background:var(--paper)}
+footer{padding-block:32px 48px;font-size:12px;color:var(--ink-2);border-top:2px solid var(--ink)}
+footer a{word-break:break-all}
+
+@media (max-width:900px){
+  .hero,.map-grid,.info-grid,.d-grid{grid-template-columns:minmax(0,1fr)}
+  .stage{max-width:440px;margin:0 auto;width:100%}
+}
+@media (max-width:560px){
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi:nth-child(2){border-right:0}.kpi:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .d-head{grid-template-columns:minmax(0,1fr)}
+  .bar-row{grid-template-columns:104px minmax(0,1fr) 58px}
+  .callouts{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Справочник · Казахстан · ноябрь 2026</div>
+      <h1>Атлас сухих смесей <span>Sika</span> в Казахстане</h1>
+      <p class="lead">Ремонтные составы, гидроизоляция, подливки, плиточные клеи, полы, штукатурки и грунтовки. Для каждой позиции: назначение, фасовка, техданные, разрез нанесения и розничные цены в тенге. После покупки MBCC (Master Builders, бывш. BASF) в 2023 году линейки Master* выходят под именами Sika, поэтому указаны оба названия.</p>
+      <div class="kpis" id="kpis"></div>
+    </div>
+    <div>
+      <div class="stage" id="stage" aria-label="Разборная 3D-модель мешка SikaEmaco S 488">
+        <div class="bag3d" id="bag3d"></div>
+        <div class="callouts" id="callouts"></div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap">
+        <button class="btn" id="explodeBtn" aria-pressed="true">Разобрать мешок</button>
+        <button class="btn" id="spinBtn" aria-pressed="false">Остановить вращение</button>
+      </div>
+    </div>
+  </header>
+</div>
+
+<div class="wrap">
+  <section id="map">
+    <div class="sec-head">
+      <div><div class="eyebrow">География производства</div><h2>Заводы Sika в Казахстане</h2></div>
+      <p>Четыре завода Sika. Сухие смеси выпускают в Алматы и Усть-Каменогорске, добавки в бетон на всех четырёх. Ромбами отмечены площадки BASF / Master Builders, которые перешли к Sika в 2023 году: сухие смеси в Алматы с 2002, добавки в Астане с 2006, эпоксидная линия с 2016. Их текущий статус в открытых источниках не подтверждён.</p>
+    </div>
+    <div class="map-grid">
+      <div class="mapbox" id="mapbox"></div>
+      <div class="plants-list" id="plants"></div>
+    </div>
+  </section>
+
+  <section id="info">
+    <div class="sec-head">
+      <div><div class="eyebrow">Инфографика</div><h2>Цена за килограмм и рабочие толщины</h2></div>
+      <p>Цена за кг считается по середине найденного диапазона розничных цен и весу упаковки.</p>
+    </div>
+    <div class="info-grid">
+      <div class="panel"><h3>Цена, ₸ за 1 кг</h3><p class="sub">Сухие смеси в мешках и вёдрах. Позиции без найденной цены не показаны.</p><div class="bars" id="bars"></div><div class="legend" id="legend1"></div></div>
+      <div class="panel range-chart"><h3>Толщина слоя за проход, мм</h3><p class="sub">Минимум и максимум по техкартам. Шкала логарифмическая: тонкие обмазки и подливки до 100 мм видны на одной оси.</p><div id="ranges"></div></div>
+    </div>
+  </section>
+
+  <section id="catalog">
+    <div class="sec-head">
+      <div><div class="eyebrow">Анатомия ассортимента</div><h2>Каталог по группам</h2></div>
+      <p>Нажмите на карточку: откроется 3D-упаковка, разрез нанесения, состав, техданные, порядок работ и источник цены.</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div id="groups"></div>
+  </section>
+
+  <section id="table">
+    <div class="sec-head">
+      <div><div class="eyebrow">Сводная таблица</div><h2>Все позиции одним списком</h2></div>
+      <p>Сортировка по группе. Цены розничные, по объявлениям казахстанских продавцов.</p>
+    </div>
+    <div class="tablebox"><table class="full" id="fullTable"></table></div>
+  </section>
+
+  <section>
+    <div class="notice"><b>Как читать цены.</b> Sika не публикует розничный прайс для Казахстана. Цифры собраны из объявлений дилеров на satu.kz и сайтах магазинов (Neostrim, Freedom Trade, Master Builders KZ, Kurilis, StroyDK и др.). Даты на карточках обычно не указаны, а у одного продавца бывают разные цены. Перед закупкой запросите прайс у официального дистрибьютора. Техданные взяты из техкарт Sika/MBCC; региональные версии с пометкой «KZ» могут отличаться. Изображения упаковки схематичные, не фотографии.</div>
+  </section>
+
+  <footer id="sources"></footer>
+</div>
+
+<div class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="dTitle">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+const GROUPS = {
+  repair:{n:"Ремонт бетона",c:"--g-repair",d:"Восстановление железобетона: сколы, раковины, защитный слой арматуры. Классы R3/R4 по EN 1504-3."},
+  water:{n:"Гидроизоляция",c:"--g-water",d:"Гидропломбы для активных протечек, проникающие и обмазочные составы для подвалов, бассейнов, резервуаров."},
+  grout:{n:"Подливка и анкеровка",c:"--g-grout",d:"Наливные безусадочные смеси под оборудование, колонны, анкерные болты и стыки сборного железобетона."},
+  tile:{n:"Плитка и кладка",c:"--g-tile",d:"Плиточные клеи C0–C2TE S1, кладочный клей для газоблока и затирки швов."},
+  floor:{n:"Полы",c:"--g-floor",d:"Самонивелирующиеся смеси и сухие упрочнители (топпинги) для промышленных бетонных полов."},
+  plaster:{n:"Штукатурки",c:"--g-plaster",d:"Цементные штукатурки по бетону и кирпичу."},
+  primer:{n:"Грунтовки",c:"--g-primer",d:"Акриловые грунтовки в вёдрах и канистрах: укрепляют основание и снижают впитывание перед клеем, наливным полом, штукатуркой."}
+};
+
+/* pk: тип упаковки (bag|bucket|kit|can), w: вес кг, p:[мин,макс] ₸ | null */
+const P = [
+ {id:"s488",g:"repair",star:1,n:"SikaEmaco S 488",o:"MasterEmaco S 488",u:"Тиксотропная безусадочная фиброармированная смесь для конструкционного ремонта бетона по вертикали и потолку",pk:"bag",w:25,p:[5600,8099],
+  sp:{"Класс":"R4 · EN 1504-3","Толщина за проход":"6–40 мм","Прочность на сжатие":"≥ 17 МПа / 1 сут · ≥ 30 МПа / 7 сут · ≥ 50 МПа / 28 сут","Прочность на изгиб":"≥ 7 МПа / 28 сут","Вода затворения":"3,5–4,0 л на мешок 25 кг","Выход":"13–13,5 л раствора с мешка","Расход":"≈ 1,9 кг/м² на 1 мм","Жизнеспособность":"45–60 мин при +21 °C","Срок хранения":"6 мес"},
+  t:[6,40],comp:[["Цемент",30],["Кварц. песок",56],["Микрокремнезём",6],["Полимер",5],["Фибра",3]],
+  layers:[["Бетон",0],["Увлажнение",0],["S 488",30]],steps:["Удалить слабый бетон, вскрыть и очистить арматуру","Насытить основание водой до матово-влажного","Смешать 3–5 мин миксером, вода по техкарте","Нанести шпателем или торкретом 6–40 мм за проход","Уход: укрыть плёнкой или влажный уход 24 ч"],src:"neostrim.satu.kz, freedomtradekz.kz, masterbuilders.kz"},
+ {id:"t300",g:"repair",star:1,n:"SikaEmaco T 300",o:"MasterEmaco T 300",u:"Наливной быстротвердеющий высокопрочный раствор: ремонт дорожного бетона, установка люков и бордюров, ремонт кирпичных колодцев",pk:"bag",w:25,p:[6214,8080],
+  sp:{"Тип":"Наливной, полимермодифицированный, быстротвердеющий","Толщина за проход":"20–50 мм","Открытие движения":"≈ через 1 ч","Ограничение":"Не для тонких поверхностных покрытий","Прочность, вода":"официальная техкарта KZ не найдена"},
+  t:[20,50],comp:[["Цемент",32],["Песок",58],["Ускоритель",4],["Полимер",4],["Фибра",2]],
+  layers:[["Бетон",0],["T 300",34]],steps:["Вырубить разрушенный бетон, глубина ремонта ≥ 20 мм","Увлажнить основание","Замешать порцию, которую успеете залить: смесь быстро твердеет","Залить в подготовленную полость или под раму люка","Через ≈ 1 ч можно открывать движение"],src:"satu.kz, freedomtradekz.kz, neostrim.kz"},
+ {id:"t1100",g:"repair",n:"SikaEmaco T 1100 TIX",o:"MasterEmaco T 1100 TIX",u:"Быстротвердеющая тиксотропная смесь с фиброй для ремонта вертикальных и потолочных поверхностей, мостов и дорог",pk:"bag",w:25,p:[12041,14977],
+  sp:{"Класс":"R4 · EN 1504-3","Толщина за проход":"10–100 мм (подливка до 150 мм)","Прочность на сжатие":"> 30 МПа за 24 ч даже при −5 °C · итоговая > 80 МПа","Вода затворения":"3,1–3,6 л на 25 кг","Жизнеспособность":"≈ 20 мин при +20 °C","Открытие движения":"через 2 ч"},
+  t:[10,100],comp:[["Цемент",33],["Песок",55],["Ускоритель",4],["Полимер",5],["Фибра",3]],layers:[["Бетон",0],["T 1100 TIX",36]],steps:["Подготовка и увлажнение основания","Замес 3 мин","Нанесение 10–100 мм за проход","Уход"],src:"satu.kz, neostrim.kz"},
+ {id:"n900",g:"repair",n:"SikaEmaco N 900",o:"MasterEmaco N 900",u:"Финишная выравнивающая шпаклёвка по бетону для заделки пор и раковин тонким слоем",pk:"bag",w:25,p:[13086,13086],
+  sp:{"Класс":"Финишный (неконструкционный)","Толщина":"≈ 0,5–5 мм","Расход":"≈ 1,5 кг/м² на 1 мм"},t:[0.5,5],comp:[["Цемент",38],["Тонкий наполнитель",54],["Полимер",8]],layers:[["Бетон",0],["N 900",10]],steps:["Обеспылить и увлажнить","Нанести стальным шпателем","Загладить"],src:"masterbuilders.kz"},
+ {id:"mt612",g:"repair",n:"Sika MonoTop-612",o:"",u:"Однокомпонентный ремонтный раствор с низкой усадкой для восстановления бетона и железобетона",pk:"bag",w:25,p:[7955,8301],
+  sp:{"Класс":"R4 (техкарта UK) / R3 (Ирландия)","Прочность на сжатие":"≈ 23 МПа / 1 сут · ≈ 50 / 7 сут · ≈ 55 МПа / 28 сут","Макс. зерно":"3 мм","Толщина за проход":"≈ 6–40 мм","Расход":"≈ 1,9 кг/м² на 1 мм"},t:[6,40],comp:[["Цемент",30],["Песок",60],["Полимер",7],["Фибра",3]],layers:[["Бетон",0],["MonoTop-612",30]],steps:["Подготовка основания","Увлажнение","Нанесение","Уход"],src:"neostrim.kz, freedomtradekz.kz, masterbuilders.kz; есть на kaspi.kz"},
+ {id:"mt620",g:"repair",n:"Sika MonoTop-620 (KZ)",o:"",u:"Ремонтно-выравнивающий раствор для мелкого ремонта и выравнивания бетонных поверхностей",pk:"bag",w:25,p:[9760,9760],
+  sp:{"Класс":"R3 (типично)","Толщина":"≈ 1–5 мм за проход"},t:[1,5],comp:[["Цемент",36],["Тонкий песок",56],["Полимер",8]],layers:[["Бетон",0],["MonoTop-620",12]],steps:["Подготовка","Увлажнение","Шпатлевание","Уход"],src:"technoland.kz"},
+
+ {id:"s590",g:"water",star:1,n:"SikaTop-590 Seal",o:"MasterSeal 590 · гидропломба",u:"Гидропломба: быстросхватывающийся цемент без хлоридов, останавливает активные протечки воды за 2–4 минуты",pk:"bucket",w:20,p:[30058,37060],extra:"Также 5 кг ведро ≈ 14 749 ₸; 25 кг ≈ 35 623–50 575 ₸",
+  sp:{"Тип":"Быстросхватывающийся цементный состав","Схватывание":"2–4 мин при +21 °C","Прочность на сжатие":"≈ 12,4 МПа через 20–120 мин","Уход":"держать влажным ≥ 15 мин","Перекрытие":"обмазочной гидроизоляцией через 15 мин","Хлориды":"не содержит","Срок хранения":"12 мес","Фасовка":"5 кг, 20 кг, 25 кг"},
+  t:[20,60],comp:[["Цемент спец.",60],["Наполнитель",30],["Ускоритель",10]],layers:[["Бетон с течью",0],["Штраба ≥ 20 мм",0],["590 Seal",26]],steps:["Расшить трещину «ласточкиным хвостом» на глубину ≥ 20 мм","Замешать порцию, которую успеете уложить за 1 мин","Сформовать пробку и вдавить в течь, держать 2–4 мин до схватывания","Сверху выполнить обмазочную гидроизоляцию (501 / 107)"],src:"neostrim.satu.kz, freedomtradekz.kz, izoteh.kz, kurilis.kz"},
+ {id:"s501",g:"water",star:1,n:"SikaTop-501 Seal",o:"MasterSeal 501",u:"Проникающая капиллярная гидроизоляция: кристаллы растут в порах бетона и закупоривают капилляры",pk:"bucket",w:20,p:[14716,19430],
+  sp:{"Тип":"Проникающая (кристаллизующая)","Слоёв":"2","Расход":"≈ 1,0 кг/м² порошка на слой (2 слоя)","Затворение":"вода : порошок ≈ 0,35 по массе","Второй слой":"через 2–4 ч","Пешеходная нагрузка":"через 24 ч","Применение":"Подвалы, резервуары, колодцы, с позитивной и негативной стороны"},t:[1,2],comp:[["Цемент",55],["Кварц",35],["Активные добавки",10]],layers:[["Бетон",0],["Кристаллы в порах",6],["501 · 2 слоя",8]],steps:["Очистить бетон, вскрыть поры","Обильно увлажнить","Нанести кистью первый слой","Второй слой по свежему первому","Увлажнять 3 сут"],src:"neostrim.kz, komfort.kz"},
+ {id:"s107",g:"water",n:"SikaTop Seal-107",o:"",u:"Двухкомпонентная полимерцементная обмазочная гидроизоляция для бассейнов, балконов, фундаментов",pk:"kit",w:25,p:[6500,8900],
+  sp:{"Компоненты":"A (жидкость 5 кг) + B (порошок 20 кг)","Слоёв":"2 и более","Общая толщина":"2–3 мм","Расход":"≈ 2,0 кг/м² на 1 мм (1–1,5 кг/м² на слой)","Выход":"≈ 12,5 л с комплекта","Прочность на сжатие":"≈ 20 МПа / 3 сут · ≈ 35 МПа / 28 сут","Жизнеспособность":"≈ 30 мин","Перекрытие":"не ранее 7 сут"},t:[1,3],comp:[["Цемент",45],["Песок",45],["Акрил. дисперсия (A)",10]],layers:[["Бетон",0],["107 · слой 1",6],["107 · слой 2",6]],steps:["Подготовить и увлажнить основание","Влить компонент A, засыпать B, перемешать","Нанести кистью 1-й слой","Через 3–6 ч второй слой крест-накрест"],src:"satu.kz, kz.bizorg.su"},
+
+ {id:"g928",g:"grout",star:1,n:"SikaGrout-928",o:"MasterFlow 928 · ранее Emaco S55",u:"Наливная безусадочная подливочная смесь высокой точности под оборудование, колонны, анкеры",pk:"bag",w:25,p:[8895,9570],
+  sp:{"Тип":"Безусадочный цементный грунт, наливной","Класс":"EN 1504-6 · EN 1504-3 R4 · ASTM C1107","Зазор":"≥ 25 мм за заливку; свыше ≈ 150 мм по согласованию","Прочность на сжатие":"≥ 30 / 1 сут · ≥ 50 / 3 сут · ≥ 60 / 7 сут · ≥ 65 МПа / 28 сут","Вода":"≈ 4,2–4,8 л на 25 кг (по консистенции)","Расход":"≈ 1 900 кг сухой смеси на 1 м³","Выход":"12–13 л раствора с мешка","Жизнеспособность":"≈ 30–60 мин","Срок хранения":"12 мес"},
+  t:[25,150],comp:[["Цемент",38],["Кварц фракц.",55],["Расширяющая",4],["Пластификатор",3]],layers:[["Бетон фундамента",0],["Подливка 928",30],["Опорная плита",8]],steps:["Опалубка с запасом по высоте 150 мм со стороны заливки","Насытить основание водой 6–24 ч, удалить лужи","Замесить мешок целиком 5 мин","Заливать непрерывно с одной стороны без вибрирования","Влажный уход по открытым кромкам"],src:"stroydk.kz, adzgroup.kz, kurilis.kz, neostrim.kz"},
+ {id:"g212",g:"grout",n:"SikaGrout 212",o:"",u:"Подливочная безусадочная смесь общего назначения для анкеровки и заполнения полостей",pk:"bag",w:25,p:[7456,7456],
+  sp:{"Тип":"Безусадочный подливочный раствор","Зазор":"≈ 10–80 мм"},t:[10,80],comp:[["Цемент",38],["Песок",56],["Добавки",6]],layers:[["Бетон",0],["Подливка",28],["Плита",8]],steps:["Опалубка","Увлажнение","Замес","Заливка","Уход"],src:"masterbuilders.kz"},
+
+ {id:"c-std",g:"tile",n:"SikaCeram Standard",o:"",u:"Базовый цементный клей для керамической плитки внутри помещений, повышенная стойкость к сползанию",pk:"bag",w:25,p:[1523,2408],
+  sp:{"Класс":"C0/C1 (по продавцам)","Слой":"2–10 мм","Расход":"≈ 1,4 кг/м² на 1 мм"},t:[2,10],comp:[["Цемент",30],["Песок",66],["Добавки",4]],layers:[["Стена",0],["Грунт P 300",2],["Клей",8],["Плитка",10]],steps:["Загрунтовать основание","Замешать клей, выдержать 5 мин","Нанести зубчатым шпателем","Уложить плитку с поворотом"],src:"neostrim.satu.kz"},
+ {id:"c-uni",g:"tile",n:"SikaCeram Universal",o:"",u:"Универсальный клей для керамики и мелкого керамогранита внутри и снаружи",pk:"bag",w:25,p:[1956,2754],sp:{"Класс":"C1","Слой":"2–10 мм"},t:[2,10],comp:[["Цемент",33],["Песок",62],["Добавки",5]],layers:[["Стена",0],["Грунт",2],["Клей",8],["Плитка",10]],steps:["Грунтовка","Замес","Нанесение","Укладка"],src:"neostrim.kz"},
+ {id:"c14",g:"tile",n:"SikaCeram 14",o:"MasterTile 14",u:"Клей для кафеля, керамики и мозаики",pk:"bag",w:25,p:[1572,3390],sp:{"Класс":"C1","Слой":"до 10 мм"},t:[2,10],comp:[["Цемент",32],["Песок",63],["Добавки",5]],layers:[["Основание",0],["Клей",8],["Плитка",10]],steps:["Грунтовка","Замес","Нанесение","Укладка"],src:"bokentaucompany.kz, neostrim.kz, megastroy.kz"},
+ {id:"c-pro",g:"tile",star:1,n:"SikaCeram Pro / Pro KZ",o:"",u:"Усиленный клей для керамогранита, камня и крупного формата; Pro KZ — версия казахстанского производства",pk:"bag",w:25,p:[2380,5200],
+  sp:{"Класс":"C2TE (ГОСТ Р 56387)","Формат плитки":"до 100×100 см","Применение":"Внутри и снаружи; не для впитывающего натурального камня","Производитель (Pro KZ)":"ТОО «Сика Казахстан», Алматы","Слой":"3–15 мм","Открытое время":"≥ 30 мин (класс E)"},t:[3,15],comp:[["Цемент",35],["Песок",58],["Полимер",5],["Добавки",2]],layers:[["Основание",0],["Грунт",2],["Клей Pro",10],["Керамогранит",10]],steps:["Грунтовка","Замес","Двойное нанесение для крупного формата","Укладка с подбивкой"],src:"neostrim.kz, titawin.kz, optimus-kz.com, 7z.kz"},
+ {id:"c15",g:"tile",n:"SikaCeram 15",o:"MasterTile 15",u:"Клей для керамогранита, мрамора и натурального камня",pk:"bag",w:25,p:[3547,4615],sp:{"Класс":"C2","Слой":"3–10 мм"},t:[3,10],comp:[["Цемент",35],["Песок",58],["Полимер",5],["Добавки",2]],layers:[["Основание",0],["Клей",9],["Камень",12]],steps:["Грунтовка","Замес","Нанесение","Укладка"],src:"neostrim.kz, baumarkt.kz, satu.kz"},
+ {id:"flx24",g:"tile",n:"SikaCeram FLX 24",o:"MasterTile FLX 24",u:"Эластичный клей для тёплых полов, фасадов, бассейнов и деформирующихся оснований; серый и белый",pk:"bag",w:25,p:[6272,6800],extra:"Белый: 9 677–10 186 ₸",
+  sp:{"Класс":"C2TE S1","Слой":"2–10 мм","Расход":"≈ 1,4 кг/м² на 1 мм","Цвет":"Серый / белый"},t:[2,10],comp:[["Цемент",34],["Песок",54],["Полимер",10],["Добавки",2]],layers:[["Основание",0],["Клей FLX",8],["Плитка",10]],steps:["Грунтовка","Замес","Нанесение","Укладка"],src:"neostrim.satu.kz, satu.kz"},
+ {id:"c5",g:"tile",n:"SikaCeram 5",o:"MasterTile 5",u:"Кладочный клей для газобетона и пеноблоков (тонкий шов)",pk:"bag",w:25,p:[1715,2390],sp:{"Шов":"2–5 мм","Расход":"≈ 1,4 кг/м² на 1 мм шва"},t:[2,5],comp:[["Цемент",30],["Песок",67],["Добавки",3]],layers:[["Блок",0],["Шов",5],["Блок",0]],steps:["Обеспылить блок","Замес","Нанести кареткой","Уложить блок"],src:"neostrim.satu.kz, akvilon.kz"},
+ {id:"t555",g:"tile",n:"SikaTile 555",o:"MasterTile FLX 555",u:"Цементно-полимерная затирка для швов плитки",pk:"bag",w:20,p:[7830,10056],extra:"5 кг: 3 376–3 890 ₸",sp:{"Класс":"CG2","Ширина шва":"≈ 1–6 мм"},t:[1,6],comp:[["Цемент",40],["Наполнитель",48],["Полимер",8],["Пигмент",4]],layers:[["Плитка",0],["Шов",6]],steps:["Очистить швы","Замес","Втереть резиновым шпателем","Смыть излишки влажной губкой"],src:"neostrim.kz"},
+ {id:"c800",g:"tile",n:"SikaCeram-800 EP",o:"MasterTile EPO 700",u:"Эпоксидный двухкомпонентный клей-затирка: химстойкие швы для пищевых цехов, бассейнов, лабораторий",pk:"bucket",w:5.2,p:[65668,65668],sp:{"Класс":"RG / R2","Тип":"Эпоксидный, 2 компонента"},t:[1,10],comp:[["Эпокс. смола",30],["Отвердитель",10],["Кварц. наполнитель",60]],layers:[["Плитка",0],["Эпоксидный шов",6]],steps:["Смешать A+B целиком","Втереть в швы","Смыть до полимеризации"],src:"freedomtradekz.kz"},
+
+ {id:"f120",g:"floor",n:"Sikafloor-120 Level Standard (KZ)",o:"",u:"Самонивелирующаяся смесь для выравнивания пола слоем 2–20 мм под финишные покрытия",pk:"bag",w:25,p:[3290,4465],sp:{"Толщина":"2–20 мм","Расход":"≈ 1,7 кг/м² на 1 мм","Хождение":"через ≈ 4–6 ч"},t:[2,20],comp:[["Цемент/гипс",35],["Песок",55],["Полимер",6],["Добавки",4]],layers:[["Стяжка",0],["Грунт",2],["Наливной пол",14]],steps:["Загрунтовать основание","Замес до текучести","Розлив полосами","Прокатать игольчатым валиком"],src:"kurilis.kz, neostrim.kz, serilik-m.kz"},
+ {id:"sl505",g:"floor",n:"SikaLevel SL 505",o:"MasterTile SL 505",u:"Наливной пол для выравнивания оснований в жилых и офисных помещениях",pk:"bag",w:25,p:[4641,4641],sp:{"Толщина":"≈ 3–30 мм"},t:[3,30],comp:[["Цемент",36],["Песок",56],["Добавки",8]],layers:[["Основание",0],["Грунт",2],["SL 505",16]],steps:["Грунтовка","Замес","Розлив","Прокатка"],src:"neostrim.kz"},
+ {id:"qt100",g:"floor",n:"Sikafloor QuartzTop-100",o:"MasterTop 100",u:"Сухой кварцевый упрочнитель (топпинг): втирается в свежий бетон, повышает износостойкость пола",pk:"bag",w:25,p:[3582,5049],sp:{"Расход":"3–5 кг/м² лёгкая · 5–8 средняя · 7–8 кг/м² тяжёлая нагрузка","Наполнитель":"Природный кварц","Истираемость":"Böhme A6 · BCA AR1","Применение":"Склады, паркинги, цеха"},t:[1,3],comp:[["Цемент",35],["Кварц",60],["Добавки",5]],layers:[["Свежий бетон",0],["Топпинг",6]],steps:["Дождаться следа ноги 3–5 мм","Рассыпать 2/3 нормы, затереть","Рассыпать 1/3, затереть","Пропитка-уход"],src:"neostrim.satu.kz, kurilis.kz, freedomtradekz.kz"},
+ {id:"chap",g:"floor",n:"SikaChapdur",o:"",u:"Сухой упрочнитель поверхности бетонных полов",pk:"bag",w:25,p:[3313,3313],sp:{"Расход":"≈ 3–5 кг/м²"},t:[1,3],comp:[["Цемент",35],["Минер. заполнитель",60],["Добавки",5]],layers:[["Свежий бетон",0],["Топпинг",6]],steps:["Рассыпать по свежему бетону","Затереть","Уход"],src:"freedomtradekz.kz"},
+
+ {id:"r335",g:"plaster",n:"SikaWall R 335",o:"MasterEmaco R 335",u:"Цементная штукатурка по бетону и кирпичу, внутри и снаружи",pk:"bag",w:25,p:[1833,2549],sp:{"Толщина":"3–8 мм за слой","Марка":"≥ M100","Морозостойкость":"F35","Расход":"≈ 1,6 кг/м² на 1 мм"},t:[3,8],comp:[["Цемент",25],["Песок",70],["Добавки",5]],layers:[["Кирпич/бетон",0],["Грунт",2],["Штукатурка",14]],steps:["Обеспылить, загрунтовать","Замес","Нанести и вытянуть правилом","Затереть"],src:"neostrim.kz, freedomtradekz.kz, satu.kz"},
+
+ {id:"p300",g:"primer",star:1,n:"Sika Primer P 300",o:"MasterTile P 300",u:"Акриловая грунтовка для впитывающих оснований (бетон, стяжка, штукатурка, гипс); концентрат",pk:"bucket",w:10,p:[22485,23905],sp:{"Тип":"Акриловая дисперсия, концентрат","Тип по EN":"EN 1504-2 (акриловый сополимер)","Разбавление":"по основанию, уточнить в техкарте","Расход":"≈ 0,1–0,2 кг/м² (типично для акриловых)","Высыхание":"≈ 2 ч","Фасовка":"Ведро 10 кг"},t:null,comp:[["Акрил. дисперсия",40],["Вода",58],["Добавки",2]],layers:[["Основание",0],["Плёнка грунта",3]],steps:["Обеспылить основание","Развести водой","Нанести кистью или валиком","Дать высохнуть до отлипа"],src:"neostrim.satu.kz, solideng.kz, masterbuilders.kz"},
+ {id:"p310",g:"primer",n:"Sika Primer P 310",o:"MasterTile P 310",u:"Профессиональная грунтовка для стен и полов перед клеем, наливным полом и штукатуркой",pk:"bucket",w:5,p:[5481,5826],sp:{"Тип":"Акриловая","Фасовка":"5 кг"},t:null,comp:[["Акрил",35],["Вода",63],["Добавки",2]],layers:[["Основание",0],["Грунт",3]],steps:["Обеспылить","Нанести","Высушить"],src:"freedomtradekz.kz, mapl.kz, masterbuilders.kz"},
+ {id:"p333",g:"primer",n:"Sika Primer P 333",o:"MasterTile P 333",u:"Грунтовка под отделочные и плиточные работы",pk:"can",w:10,p:[5841,5841],sp:{"Фасовка":"10 кг (цена у продавца выглядит заниженной, уточнить)"},t:null,comp:[["Акрил",30],["Вода",68],["Добавки",2]],layers:[["Основание",0],["Грунт",3]],steps:["Обеспылить","Нанести","Высушить"],src:"neostrim.kz"},
+ {id:"p3n",g:"primer",n:"Sika Primer-3N",o:"",u:"Праймер под полиуретановые герметики Sikaflex на бетоне, металле и дереве",pk:"can",w:1,p:[20800,20800],unit:"л",sp:{"Тип":"Эпокси-полиуретановый праймер","Фасовка":"1 л"},t:null,comp:[["Смола",35],["Растворитель",65]],layers:[["Основание",0],["Праймер",2],["Герметик",10]],steps:["Очистить","Нанести тонко кистью","Выдержать 30 мин – 8 ч"],src:"neostrim.kz"}
+];
+
+const SOURCES = [
+ ["Sika: новый завод в Усть-Каменогорске (апрель 2025)","https://www.sika.com/en/media/media-releases/2025/sika-opens-new-plant-in-kazakhstan.html"],
+ ["Sika переносит производство в Алматы на новую площадку (2017)","https://cemnet.com/News/story/161689/sika-relocates-kazakh-production-unit-to-larger-site.html"],
+ ["Sika запускает заводы добавок в Астане и Атырау (2018)","https://www.globenewswire.com/news-release/2018/10/11/1619688/0/en/SIKA-COMMISSIONS-TWO-NEW-PLANTS-IN-KAZAKHSTAN.html"],
+ ["Interfax-Kazakhstan, 15.10.2018","https://www.interfax.kz/en/news/34025"],
+ ["Sika, пресс-релиз 11.05.2017 (Алматы)","https://www.sika.com/dms/getdocument.get/d2f91068-3413-4aeb-b43e-dc2e5e423670/glo-en-media-release-kazakhstan-11-05-2017.pdf"],
+ ["BASF в Казахстане: история площадок","https://www.rogtecmagazine.com/success-stories-kazakhstan-basf-saule-baitzhaunova"],
+ ["MBCC: запуск эпоксидной линии в Астане","https://mbcc.sika.com/en-kz/about-us/news/epoxy-materials-production-launch"],
+ ["Техкарта MasterEmaco T 300 (исп.)","https://www.master-builders-solutions-cc.es/profesionales/ficha-tecnica/masteremaco-t-300"],
+ ["Техкарта SikaEmaco T 1100 TIX","https://gbr.sika.com/dam/dms/gb01/0/sikaemaco-t-1100tix.pdf"],
+ ["Техкарта SikaTop Seal-107","https://vnm.sika.com/content/dam/dms/vn01/r/sikatop-107-sealvn.pdf"],
+ ["Техкарта SikaTop-501 Seal","https://pak.sika.com/dms/getdocument.get/dd431466-91fb-463a-a66c-8744de44e2b2/sikatop-501-seal.pdf"],
+ ["Техкарта Sikafloor QuartzTop-100","https://nga.sika.com/dam/dms/ng01/g/sikafloor-quartztop-100.pdf"],
+ ["Satu.kz: MasterEmaco / SikaEmaco","https://satu.kz/Emaco.html"],
+ ["Satu.kz: MasterFlow / SikaGrout","https://satu.kz/Masterflow.html"],
+ ["Satu.kz: MasterTile / SikaCeram","https://satu.kz/Mastertile-flx-24.html"],
+ ["Neostrim: ремонт и защита бетона","https://neostrim.kz/catalog/stroymaterialy/sukhie-stroitelnye-smesi/remont-i-zashchita-betona/"],
+ ["Neostrim: гидропломба SikaTop-590 Seal","https://neostrim.kz/catalog/stroymaterialy/gidroizolyatsiya/gidroplomba-sikatop-590-seal-masterseal-590-20-kg/"],
+ ["Freedom Trade KZ: SikaEmaco S 488","https://freedomtradekz.kz/p107474330-remontnaya-smes-sikaemaco.html"],
+ ["Master Builders KZ: каталог Sika","https://masterbuilders.kz/p123844945-remontnaya-smes-sikaemaco.html"],
+ ["StroyDK: SikaGrout-928","https://stroydk.kz/tovary/gidro-isolat/gidroizolyatsiya/betonnaya-smes-nalivnogo-tipa-sikagrout-928-masterflow-928-25-kg"],
+ ["Kurilis: Sika в Алматы","https://kurilis.kz/sika-almaty"],
+ ["Kaspi: Sika MonoTop-612","https://kaspi.kz/shop/p/sika-monotop-612-25-kg-104179982/"],
+ ["Техкарта SikaCeram Pro KZ","https://kaz.sika.com/dam/dms/kz01/y/PDS-SikaCeram-Pro-KZ.pdf"],
+ ["Техкарта SikaEmaco S 488","https://bel.sika.com/dam/dms/be01/p/sikaemaco-s-488.pdf"],
+ ["Техкарта SikaTop-590 Seal","https://nor.sika.com/dms/getdocument.get/6e793c73-9864-449c-ab9e-2ae929de6a53/sikatop-590-seal.pdf"],
+ ["Техкарта SikaGrout-928","https://ukr.sika.com/dms/getdocument.get/68fd47cd-4877-464c-89d6-cf352d55f166/sikagrout-928.pdf"]
+];
+
+const PLANTS = [
+ {id:"ala",n:"Алматы",x:431,y:263,lx:-12,ly:-10,a:"end",yr:"2007 / 2017",what:["Сухие смеси","Добавки в бетон"],d:"Первый завод Sika в Казахстане (2007; компания в стране с 2005). 11 мая 2017 года производство смесей и добавок перенесли на более крупную площадку в городе; завод снабжает и Кыргызстан. Здесь выпускают SikaCeram Pro KZ. Офис по данным 2ГИС: пр. Райымбека, 211а; тел. +7 (727) 226-03-32."},
+ {id:"ast",n:"Астана",x:358,y:105,lx:-14,ly:-8,a:"end",yr:"2018",what:["Добавки в бетон"],d:"Завод добавок для бетона (суперпластификаторы ViscoCrete и др.), запущен в октябре 2018 года. Обслуживает север и центр страны."},
+ {id:"atr",n:"Атырау",x:96,y:186,lx:12,ly:-6,a:"start",yr:"2018",what:["Добавки в бетон"],d:"Завод добавок на западе, запущен в 2018 году. Обслуживает нефтегазовые проекты Прикаспия."},
+ {id:"ukg",n:"Усть-Каменогорск",x:507,y:129,lx:6,ly:24,a:"middle",yr:"2025",what:["Сухие смеси","Добавки в бетон","Лаборатория"],d:"Четвёртый завод, открыт в апреле 2025 года. Линии растворных смесей и добавок и собственная лаборатория. Ориентирован на горнодобывающие и строительные проекты востока."}
+];
+const LEGACY=[{n:"Алматы",x:445,y:250},{n:"Астана",x:372,y:95}];
+const CITIES=[["Шымкент",333,282],["Караганда",392,150],["Актобе",167,122],["Актау",86,255],["Павлодар",431,82],["Костанай",253,64],["Уральск",89,103],["Тараз",357,270]];
+const KZ="M25,160 L31,144 L27,130 L35,120 L53,116 L52,100 L70,96 L81,94 L101,92 L116,98 L131,108 L147,116 L164,106 L184,106 L198,116 L204,108 L224,112 L226,96 L204,84 L218,70 L231,64 L220,56 L218,48 L238,48 L274,36 L285,34 L314,28 L328,20 L352,44 L354,26 L381,50 L388,46 L395,58 L423,44 L425,64 L446,80 L474,112 L482,102 L499,112 L518,108 L542,136 L563,132 L570,146 L553,158 L547,186 L512,184 L502,218 L475,228 L479,248 L483,264 L475,276 L462,272 L432,268 L413,272 L395,264 L384,278 L362,272 L350,284 L338,298 L320,314 L312,308 L293,304 L285,270 L258,256 L231,258 L218,240 L184,216 L151,228 L151,302 L143,302 L125,282 L110,286 L106,274 L88,264 L84,238 L74,236 L88,224 L109,220 L113,202 L86,186 L60,200 L52,196 L57,188 L44,174Z";
+
+const $=s=>document.querySelector(s);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt=n=>Math.round(n).toLocaleString("ru-RU").replace(/,/g," ");
+const priceTxt=p=>!p.p?'<span class="na">цена не найдена</span>':(p.p[0]===p.p[1]?fmt(p.p[0]):fmt(p.p[0])+"–"+fmt(p.p[1]))+" ₸";
+const perKg=p=>p.p?((p.p[0]+p.p[1])/2)/p.w:null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- package SVG ---------- */
+function pkgSVG(p,big){
+  const gc=`var(${GROUPS[p.g].c})`, short=p.n.replace(/^Sika(floor|Ceram|Emaco|Grout|Top|Wall|Level|Tile)?\s?/,"").replace(/^-/,"")||p.n;
+  const nm=esc(short.length>14?short.slice(0,14)+"…":short), w=p.w+(p.unit||" кг");
+  const uid=p.id+(big?"b":"s");
+  if(p.pk==="bag") return `<svg viewBox="0 0 120 170" aria-hidden="true">
+   <defs><linearGradient id="k${uid}" x1="0" x2="1"><stop offset="0" stop-color="var(--kraft-2)"/><stop offset=".45" stop-color="var(--kraft)"/><stop offset="1" stop-color="var(--kraft-2)"/></linearGradient></defs>
+   <ellipse cx="60" cy="163" rx="46" ry="5" fill="var(--ink)" opacity=".18"/>
+   <path d="M18 18 Q60 8 102 18 L106 150 Q60 160 14 150 Z" fill="url(#k${uid})" stroke="var(--ink)" stroke-width="1.2"/>
+   <path d="M18 18 Q60 8 102 18 L101 26 Q60 17 19 26Z" fill="var(--ink)" opacity=".18"/>
+   <path d="M16 70 Q60 62 104 70 L105 112 Q60 120 15 112Z" fill="${gc}"/>
+   <rect x="22" y="34" width="34" height="9" fill="var(--accent)"/><text x="24" y="41.5" font-family="Unbounded,Arial Black,sans-serif" font-size="7" font-weight="800" fill="#1a1400">SIKA</text>
+   <text x="60" y="88" text-anchor="middle" font-family="Unbounded,Arial Black,sans-serif" font-size="10" font-weight="700" fill="#fff">${nm}</text>
+   <text x="60" y="102" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#fff" opacity=".9">${esc(GROUPS[p.g].n)}</text>
+   <text x="60" y="138" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" font-weight="600" fill="var(--ink)">${w}</text>
+   <path d="M30 150 l4 -6 M90 150 l-4 -6" stroke="var(--ink)" opacity=".3"/></svg>`;
+  if(p.pk==="kit") return `<svg viewBox="0 0 150 170" aria-hidden="true">
+   <ellipse cx="75" cy="163" rx="62" ry="5" fill="var(--ink)" opacity=".18"/>
+   <path d="M10 28 Q48 20 86 28 L89 152 Q48 160 7 152Z" fill="var(--kraft)" stroke="var(--ink)" stroke-width="1.2"/>
+   <path d="M8 74 Q48 67 88 74 L89 112 Q48 119 7 112Z" fill="${gc}"/>
+   <text x="48" y="92" text-anchor="middle" font-family="Unbounded,sans-serif" font-size="9" font-weight="700" fill="#fff">${nm}</text>
+   <text x="48" y="105" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#fff">B · 20 кг</text>
+   <rect x="96" y="80" width="44" height="74" rx="4" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.2"/><rect x="108" y="70" width="20" height="12" fill="${gc}" stroke="var(--ink)"/>
+   <rect x="96" y="104" width="44" height="22" fill="${gc}"/><text x="118" y="119" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#fff">A · 5 кг</text></svg>`;
+  if(p.pk==="can") return `<svg viewBox="0 0 120 170" aria-hidden="true">
+   <ellipse cx="60" cy="163" rx="40" ry="5" fill="var(--ink)" opacity=".18"/>
+   <path d="M26 40 h52 l16 14 v100 h-68z" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.4"/>
+   <rect x="66" y="24" width="18" height="16" fill="${gc}" stroke="var(--ink)"/><path d="M34 46 h30 v-14 h-22z" fill="none" stroke="var(--ink)" stroke-width="5" opacity=".5"/>
+   <rect x="26" y="78" width="68" height="42" fill="${gc}"/><text x="60" y="96" text-anchor="middle" font-family="Unbounded,sans-serif" font-size="9" font-weight="700" fill="#fff">${nm}</text>
+   <text x="60" y="110" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#fff">${w}</text>
+   <rect x="32" y="60" width="28" height="8" fill="var(--accent)"/><text x="34" y="66.5" font-family="Unbounded,sans-serif" font-size="6" font-weight="800" fill="#1a1400">SIKA</text></svg>`;
+  return `<svg viewBox="0 0 130 170" aria-hidden="true">
+   <defs><linearGradient id="bk${uid}" x1="0" x2="1"><stop offset="0" stop-color="var(--ink)" stop-opacity=".18"/><stop offset=".4" stop-color="var(--paper)" stop-opacity="0"/><stop offset="1" stop-color="var(--ink)" stop-opacity=".25"/></linearGradient></defs>
+   <ellipse cx="65" cy="163" rx="46" ry="6" fill="var(--ink)" opacity=".18"/>
+   <path d="M20 40 h90 l-8 116 q-37 8 -74 0z" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.4"/>
+   <path d="M20 40 h90 l-8 116 q-37 8 -74 0z" fill="url(#bk${uid})"/>
+   <path d="M24 78 h82 l-2.6 40 h-76.8z" fill="${gc}"/>
+   <ellipse cx="65" cy="40" rx="47" ry="9" fill="${gc}" stroke="var(--ink)" stroke-width="1.4"/>
+   <path d="M22 40 q-6 -26 43 -28 q49 2 43 28" fill="none" stroke="var(--ink)" stroke-width="2.4"/>
+   <text x="65" y="96" text-anchor="middle" font-family="Unbounded,sans-serif" font-size="10" font-weight="700" fill="#fff">${nm}</text>
+   <text x="65" y="110" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#fff">${esc(GROUPS[p.g].n)}</text>
+   <rect x="30" y="56" width="30" height="9" fill="var(--accent)"/><text x="32" y="63.5" font-family="Unbounded,sans-serif" font-size="7" font-weight="800" fill="#1a1400">SIKA</text>
+   <text x="65" y="140" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" font-weight="600" fill="var(--ink)">${w}</text></svg>`;
+}
+
+/* ---------- HERO 3D bag ---------- */
+function box(cls,W,D,H,inner=""){
+  const f=(tr,w,h,c="")=>`<div class="face" style="width:${w}px;height:${h}px;margin:${-h/2}px 0 0 ${-w/2}px;transform:${tr}">${c}</div>`;
+  return `<div class="layer ${cls}">`+
+   f(`translateZ(${D/2}px)`,W,H,inner)+f(`rotateY(180deg) translateZ(${D/2}px)`,W,H)+
+   f(`rotateY(90deg) translateZ(${W/2}px)`,D,H)+f(`rotateY(-90deg) translateZ(${W/2}px)`,D,H)+
+   f(`rotateX(90deg) translateZ(${H/2}px)`,W,D)+f(`rotateX(-90deg) translateZ(${H/2}px)`,W,D)+`</div>`;
+}
+function buildHero(){
+  const st=$("#stage"), s=Math.min(1,st.clientWidth/460);
+  const W=190*s,D=70*s,H=290*s;
+  $("#bag3d").innerHTML=
+    box("L-fiber",W,D,H)+box("L-powder",W,D,H)+box("L-liner",W,D,H)+
+    box("L-outer",W,D,H,`<div class="label-band"><b>S 488</b><i>SikaEmaco · R4 · 25 кг</i></div>`);
+  const c=[["l","8%","10%","<b>01</b> Крафт-мешок, 3 слоя бумаги, клапан для засыпки"],["r","2%","30%","<b>02</b> ПЭ-вкладыш защищает от влаги: срок 12 мес"],["l","0%","56%","<b>03</b> Сухая смесь: цемент + кварц 0–2 мм + микрокремнезём"],["r","4%","74%","<b>04</b> Полимерная фибра против усадочных трещин"]];
+  $("#callouts").innerHTML=c.map(([side,x,y,t])=>`<div class="callout ${side}" style="${side==="l"?"left":"right"}:${x};top:${y}">${t}</div>`).join("");
+}
+$("#explodeBtn").onclick=e=>{const on=$("#bag3d").classList.toggle("exploded");e.target.setAttribute("aria-pressed",on);e.target.textContent=on?"Собрать мешок":"Разобрать мешок";$("#callouts").hidden=!on};
+$("#spinBtn").onclick=e=>{const b=$("#bag3d");const paused=b.style.animationPlayState==="paused";b.style.animationPlayState=paused?"running":"paused";e.target.setAttribute("aria-pressed",!paused);e.target.textContent=paused?"Остановить вращение":"Вращать"};
+
+/* ---------- KPIs ---------- */
+function kpis(){
+  const priced=P.filter(p=>p.p).length;
+  $("#kpis").innerHTML=[[P.length,"позиций в атласе"],[Object.keys(GROUPS).length,"групп продуктов"],[PLANTS.length,"завода в РК"],[priced,"с ценой в ₸"]].map(([b,s])=>`<div class="kpi"><b>${b}</b><small>${s}</small></div>`).join("");
+}
+
+/* ---------- MAP ---------- */
+function map(){
+  const ala=PLANTS[0];
+  $("#mapbox").innerHTML=`<svg viewBox="0 0 590 330" role="img" aria-label="Схема Казахстана с заводами Sika">
+   <path class="kz" d="${KZ}"/>
+   <text x="70" y="300" style="font:600 10px var(--f-mono);fill:var(--ink-2)">КАСПИЙСКОЕ МОРЕ ←</text>
+   ${PLANTS.slice(1).map(p=>`<path class="route" d="M${ala.x},${ala.y} Q${(ala.x+p.x)/2},${Math.min(ala.y,p.y)-60} ${p.x},${p.y}"/>`).join("")}
+   ${CITIES.map(([n,x,y])=>`<g class="city"><circle cx="${x}" cy="${y}" r="2.5"/><text x="${x+5}" y="${y+3}">${n}</text></g>`).join("")}
+   ${PLANTS.map(p=>`<g class="plant" data-id="${p.id}" tabindex="0" role="button" aria-label="Завод ${p.n}">
+     <circle class="pulse" cx="${p.x}" cy="${p.y}" r="9"/><circle class="core" cx="${p.x}" cy="${p.y}" r="7"/>
+     <text x="${p.x+p.lx}" y="${p.y+p.ly}" text-anchor="${p.a}">${p.n}</text>
+     <text class="yr" x="${p.x+p.lx}" y="${p.y+p.ly+14}" text-anchor="${p.a}">${p.yr} · ${p.what.length>1?"смеси + добавки":"добавки"}</text></g>`).join("")}
+   <g transform="translate(360,300)"><circle cx="0" cy="0" r="6" fill="var(--hot)"/><text x="10" y="4" style="font:11px var(--f-body);fill:var(--ink)">завод Sika</text></g>
+   ${LEGACY.map(p=>`<g><rect x="${p.x-6}" y="${p.y-6}" width="12" height="12" fill="none" stroke="var(--g-water)" stroke-width="2" stroke-dasharray="3 2" transform="rotate(45 ${p.x} ${p.y})"/></g>`).join("")}
+   <g transform="translate(360,318)"><rect x="-5" y="-5" width="10" height="10" fill="none" stroke="var(--g-water)" stroke-width="2" stroke-dasharray="3 2" transform="rotate(45)"/><text x="10" y="4" style="font:11px var(--f-body);fill:var(--ink)">площадка BASF / MBCC до 2023</text></g>
+   <text x="580" y="20" text-anchor="end" style="font:10px var(--f-mono);fill:var(--ink-2)">схема, без масштаба</text></svg>`;
+  $("#plants").innerHTML=PLANTS.map(p=>`<div class="plant-card" data-id="${p.id}" tabindex="0"><h3>${p.n}<span class="mono" style="color:var(--hot)">${p.yr}</span></h3><p>${p.d}</p>${p.what.map(w=>`<span class="tag">${w}</span>`).join("")}</div>`).join("");
+  const sel=id=>document.querySelectorAll(".plant-card").forEach(c=>c.classList.toggle("on",c.dataset.id===id));
+  document.querySelectorAll("[data-id]").forEach(el=>{if(!el.closest("#groups")){el.addEventListener("click",()=>sel(el.dataset.id));el.addEventListener("keydown",e=>{if(e.key==="Enter")sel(el.dataset.id)})}});
+  sel("ukg");
+}
+
+/* ---------- INFOGRAPHICS ---------- */
+function infographics(){
+  const rows=P.filter(p=>p.p).map(p=>({p,v:perKg(p)})).sort((a,b)=>b.v-a.v);
+  const max=rows[0].v;
+  $("#bars").innerHTML=rows.map((r,i)=>`<div class="bar-row"><span class="nm" title="${esc(r.p.n)}">${esc(r.p.n)}</span><span class="bar-track"><span class="bar-fill" style="width:${(r.v/max*100).toFixed(1)}%;background:var(${GROUPS[r.p.g].c});animation-delay:${i*25}ms"></span></span><span class="v">${fmt(r.v)}</span></div>`).join("");
+  $("#legend1").innerHTML=Object.values(GROUPS).map(g=>`<span><i style="background:var(${g.c})"></i>${g.n}</span>`).join("");
+  const rs=P.filter(p=>p.t).sort((a,b)=>Object.keys(GROUPS).indexOf(a.g)-Object.keys(GROUPS).indexOf(b.g));
+  const L=150,R=570,top=24,rh=17,lg=v=>L+(Math.log10(v)-Math.log10(.5))/(Math.log10(100)-Math.log10(.5))*(R-L);
+  const H=top+rs.length*rh+10;
+  const ticks=[.5,1,2,5,10,20,50,100];
+  $("#ranges").innerHTML=`<svg viewBox="0 0 590 ${H}" role="img" aria-label="Диапазоны толщины слоя">
+   ${ticks.map(t=>`<line x1="${lg(t)}" x2="${lg(t)}" y1="${top-6}" y2="${H-6}" stroke="var(--grid)" stroke-width="1"/><text class="ax" x="${lg(t)}" y="${top-10}" text-anchor="middle">${String(t).replace(".",",")}</text>`).join("")}
+   ${rs.map((p,i)=>{const y=top+i*rh+rh/2;return `<text x="${L-8}" y="${y+4}" text-anchor="end">${esc(p.n.length>22?p.n.slice(0,21)+"…":p.n)}</text>
+     <line x1="${lg(p.t[0])}" x2="${lg(p.t[1])}" y1="${y}" y2="${y}" stroke="var(${GROUPS[p.g].c})" stroke-width="8" stroke-linecap="round"/>
+     <text class="ax" x="${lg(p.t[1])+8}" y="${y+4}">${String(p.t[0]).replace(".",",")}–${p.t[1]}</text>`}).join("")}</svg>`;
+}
+
+/* ---------- CATALOG ---------- */
+let active="all",q="";
+function filters(){
+  $("#filters").innerHTML=`<button class="btn" data-g="all" aria-pressed="true">Все · ${P.length}</button>`+
+   Object.entries(GROUPS).map(([k,g])=>`<button class="btn" data-g="${k}" aria-pressed="false"><i style="background:var(${g.c})"></i>${g.n} · ${P.filter(p=>p.g===k).length}</button>`).join("")+
+   `<input class="search" id="q" type="search" placeholder="Поиск: 488, гидропломба, MasterFlow…" aria-label="Поиск по каталогу">`;
+  $("#filters").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(!b)return;active=b.dataset.g;document.querySelectorAll("[data-g]").forEach(x=>x.setAttribute("aria-pressed",x===b));renderGroups();try{localStorage.setItem("sika-g",active)}catch(_){}});
+  $("#q").addEventListener("input",e=>{q=e.target.value.toLowerCase().trim();renderGroups()});
+}
+function card(p){
+  const pk=perKg(p);
+  return `<button class="card" data-p="${p.id}" style="--gc:var(${GROUPS[p.g].c})">
+   <div class="pic">${p.star?'<span class="star">Хит</span>':""}${pkgSVG(p)}</div>
+   <div class="body"><span class="chip">${GROUPS[p.g].n}</span><h4>${esc(p.n)}</h4>${p.o?`<span class="old">${esc(p.o)}</span>`:""}<p class="use">${esc(p.u)}</p>
+   <div class="meta"><div class="price">${priceTxt(p)}${pk?`<small>≈ ${fmt(pk)} ₸/${p.unit||"кг"}</small>`:""}</div><div class="pack">${p.pk==="bag"?"мешок":p.pk==="kit"?"комплект":p.pk==="can"?"канистра":"ведро"}<br>${p.w} ${p.unit||"кг"}</div></div></div></button>`;
+}
+function renderGroups(){
+  const match=p=>!q||(p.n+" "+p.o+" "+p.u).toLowerCase().includes(q);
+  $("#groups").innerHTML=Object.entries(GROUPS).filter(([k])=>active==="all"||active===k).map(([k,g])=>{
+    const items=P.filter(p=>p.g===k&&match(p)); if(!items.length)return"";
+    return `<div class="group-block"><div class="group-title"><span class="sw" style="background:var(${g.c})"></span><h3>${g.n}</h3><p>${g.d}</p></div><div class="cards">${items.map(card).join("")}</div></div>`}).join("")||`<p class="na">Ничего не найдено. Попробуйте «Emaco», «Grout» или «клей».</p>`;
+}
+$("#groups").addEventListener("click",e=>{const c=e.target.closest("[data-p]");if(c)openP(c.dataset.p)});
+
+/* ---------- DETAIL ---------- */
+const LCOL={"Бетон":"#9aa0a0","Бетон с течью":"#8d9599","Бетон фундамента":"#9aa0a0","Свежий бетон":"#a9aeac","Стена":"#b9a99a","Кирпич/бетон":"#b9806a","Основание":"#a7a59f","Стяжка":"#a7a59f","Блок":"#e4e0d6","Плитка":"#e8e2d4","Керамогранит":"#d8d3cb","Камень":"#e8e4dc","Опорная плита":"#58626b","Плита":"#58626b"};
+function xsec(p){
+  const gc=css(GROUPS[p.g].c), W=560, base=70;
+  let y=200, out=[];
+  const subs=p.layers[0];
+  out.push(`<rect x="0" y="${y-0}" width="${W}" height="${base}" fill="${LCOL[subs[0]]||"#9aa0a0"}"/>`);
+  for(let i=0;i<14;i++)out.push(`<circle cx="${18+i*40+(i%2)*9}" cy="${y+18+(i%3)*14}" r="${3+(i%3)}" fill="#000" opacity=".12"/>`);
+  if(/Бетон/.test(subs[0])&&p.g==="repair") out.push(`<circle cx="160" cy="${y+12}" r="7" fill="#7a4a2a" stroke="#000" stroke-opacity=".4"/><circle cx="400" cy="${y+12}" r="7" fill="#7a4a2a" stroke="#000" stroke-opacity=".4"/><text x="172" y="${y+16}" style="fill:#fff">арматура</text>`);
+  if(p.id==="s590") out.push(`<path d="M250 ${y} l15 ${base} M300 ${y+8} l-8 ${base-8}" stroke="#2a6db0" stroke-width="3" opacity=".8"/><path d="M262 ${y} l-14 -10 h50 l-14 10z" fill="${gc}"/>`);
+  out.push(`<text x="8" y="${y+base-8}" style="fill:#fff;font-weight:600">${esc(subs[0])}</text>`);
+  let delay=0;
+  p.layers.slice(1).forEach((l,i)=>{
+    const h=Math.max(l[1],3)*1.6; if(l[1]===0){out.push(`<text x="${W-8}" y="${200+base+16}" text-anchor="end" style="fill:var(--ink-2)">↑ ${esc(l[0])}</text>`);return}
+    y-=h; const isP=i===p.layers.length-2||/S 488|590|928|Клей|Наливной|Топпинг|Штукатурка|107|501|Подливка|Шов|Праймер|Грунт|Плёнка|T |N |Mono|SL|Эпокс/.test(l[0]);
+    const fill=LCOL[l[0]]||(/Грунт|Праймер|Плёнка/.test(l[0])?css("--g-primer"):gc);
+    out.push(`<g class="lyr" style="animation-delay:${delay}ms"><rect x="${i%2?20:0}" y="${y}" width="${W-(i%2?40:0)}" height="${h}" fill="${fill}" opacity="${/Плитка|Керамогранит|Камень|Плита/.test(l[0])?1:.92}" stroke="var(--ink)" stroke-opacity=".25"/>
+     <text x="${W-8}" y="${y+h/2+4}" text-anchor="end" style="fill:${/Плитка|Керамогранит|Камень/.test(l[0])?"#222":"#fff"};font-weight:600">${esc(l[0])}</text></g>`);
+    delay+=350;
+  });
+  if(p.t){ out.push(`<g transform="translate(8,${y})"><path d="M0 0 v${200-y} M-4 0 h8 M-4 ${200-y} h8" stroke="var(--hot)" stroke-width="1.5"/><text x="8" y="${(200-y)/2+4}" style="fill:var(--hot);font-family:var(--f-mono)">${String(p.t[0]).replace(".",",")}–${p.t[1]} мм</text></g>`)}
+  return `<svg viewBox="0 ${Math.min(y,140)-20} ${W} ${310-Math.min(y,140)}" role="img" aria-label="Разрез нанесения">${out.join("")}</svg>`;
+}
+function openP(id){
+  const p=P.find(x=>x.id===id); if(!p)return;
+  const gc=GROUPS[p.g].c, cols=["#3d4650","#8c7a5b","#5f8fb4","#b5502b","#4b8a2a","#6b4fb3","#a37a10"];
+  const sp=Object.assign({"Фасовка":`${p.pk==="bag"?"Мешок":p.pk==="kit"?"Комплект":p.pk==="can"?"Канистра":"Ведро"} ${p.w} ${p.unit||"кг"}`},p.sp);
+  $("#sheet").innerHTML=`<button class="btn x" id="closeD">Закрыть ✕</button>
+   <div class="d-head" style="--gc:var(${gc})"><div class="pic3d">${pkgSVG(p,1)}</div>
+    <div><span class="chip" style="--gc:var(${gc})">${GROUPS[p.g].n}</span><h3 id="dTitle" style="margin-top:6px">${esc(p.n)}</h3>${p.o?`<div class="old mono" style="font-size:12px;color:var(--ink-2)">ранее: ${esc(p.o)}</div>`:""}<p>${esc(p.u)}</p>
+    <div class="price" style="font-size:22px;margin-top:10px">${priceTxt(p)} <small>${p.p?`≈ ${fmt(perKg(p))} ₸ за ${p.unit||"кг"} · розница KZ`:""}${p.extra?" · "+esc(p.extra):""}</small></div></div></div>
+   <div class="d-sec"><h5>Анатомия: разрез нанесения</h5><div class="xsec">${xsec(p)}</div></div>
+   <div class="d-grid"><div class="d-sec"><h5>Технические характеристики</h5><table class="spec">${Object.entries(sp).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</table></div>
+    <div class="d-sec"><h5>Состав сухой смеси (схема, % по массе)</h5><div class="comp">${p.comp.map((c,i)=>`<span style="width:${c[1]}%;background:${cols[i%cols.length]};animation-delay:${i*120}ms">${c[1]>=12?c[1]+"%":""}</span>`).join("")}</div>
+     <div class="comp-leg">${p.comp.map((c,i)=>`<span><i style="display:inline-block;width:9px;height:9px;background:${cols[i%cols.length]};margin-right:4px"></i>${esc(c[0])} ${c[1]}%</span>`).join("")}</div>
+     <h5>Порядок работ</h5><ol class="steps">${p.steps.map(s=>`<li><span>${esc(s)}</span></li>`).join("")}</ol></div></div>
+   <div class="d-sec"><h5>Источник цены</h5><p class="src">${esc(p.src)}. Пропорции состава схематичные: производитель не раскрывает рецептуру.</p></div>`;
+  $("#drawer").hidden=false; document.body.style.overflow="hidden"; $("#closeD").focus();
+  $("#closeD").onclick=closeD;
+}
+function closeD(){ $("#drawer").hidden=true; document.body.style.overflow=""; }
+$("#drawer").addEventListener("click",e=>{if(e.target.id==="drawer")closeD()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#drawer").hidden)closeD()});
+
+/* ---------- TABLE + SOURCES ---------- */
+function table(){
+  $("#fullTable").innerHTML=`<thead><tr><th>Группа</th><th>Продукт</th><th>Бывшее название</th><th>Назначение</th><th>Фасовка</th><th style="text-align:right">Цена, ₸</th><th style="text-align:right">₸/кг</th><th>Толщина, мм</th></tr></thead><tbody>`+
+   P.map(p=>`<tr data-p="${p.id}" style="cursor:pointer"><td><span class="chip" style="--gc:var(${GROUPS[p.g].c})">${GROUPS[p.g].n}</span></td><td><b>${esc(p.n)}</b></td><td class="mono" style="font-size:12px">${esc(p.o||"—")}</td><td>${esc(p.u)}</td><td class="n">${p.w} ${p.unit||"кг"}</td><td class="n">${p.p?priceTxt(p):"—"}</td><td class="n">${p.p?fmt(perKg(p)):"—"}</td><td class="n">${p.t?String(p.t[0]).replace(".",",")+"–"+p.t[1]:"—"}</td></tr>`).join("")+`</tbody>`;
+  $("#fullTable").addEventListener("click",e=>{const r=e.target.closest("[data-p]");if(r)openP(r.dataset.p)});
+  $("#sources").innerHTML=`<div class="eyebrow" style="margin-bottom:8px">Источники</div><ol style="margin:0;padding-left:18px;display:grid;gap:4px">${SOURCES.map(([t,u])=>`<li>${t}: <a href="${u}" target="_blank" rel="noopener">${u}</a></li>`).join("")}</ol><p style="margin-top:16px">Независимый справочник, не официальный материал Sika AG. Названия продуктов принадлежат их правообладателям.</p>`;
+}
+
+buildHero(); $("#bag3d").classList.add("exploded"); kpis(); map(); infographics(); filters();
+try{const g=localStorage.getItem("sika-g");if(g&&(g==="all"||GROUPS[g])){active=g;document.querySelectorAll("[data-g]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.g===g))}}catch(_){}
+renderGroups(); table();
+let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{const ex=$("#bag3d").classList.contains("exploded");buildHero();$("#bag3d").classList.toggle("exploded",ex)},200)});
+</script>
