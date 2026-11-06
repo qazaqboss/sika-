@@ -186,6 +186,38 @@ table.full tr:hover td{background:color-mix(in srgb,var(--accent) 12%,transparen
 footer{padding-block:32px 48px;font-size:12px;color:var(--ink-2);border-top:2px solid var(--ink)}
 footer a{word-break:break-all}
 
+
+/* ---------- 3D-анатомия ---------- */
+#gl{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:-1}
+.v3d{position:absolute;inset:0;overflow:hidden;display:none}
+.webgl .v3d{display:block}
+.webgl .card{background:transparent}
+.webgl .card .body{background:var(--paper)}
+.webgl .card .pic{height:250px;background:linear-gradient(180deg,transparent 60%,color-mix(in srgb,var(--gc) 10%,transparent));border-bottom-color:var(--line)}
+.webgl .card .pic>svg{display:none}
+.webgl .card:hover .pic svg{transform:none}
+.lb{position:absolute;left:0;top:0;pointer-events:none;font:600 10.5px/1.2 var(--f-body);color:var(--ink);white-space:nowrap;transition:opacity .25s;z-index:2}
+.lb::before{content:"";position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--hot);box-shadow:0 0 0 2px var(--paper)}
+.lb{padding:2px 6px;margin:-26px 0 0 10px;background:color-mix(in srgb,var(--paper) 88%,transparent);border:1px solid var(--ink);border-radius:3px}
+.lb::before{left:-13px;top:calc(100% + 1px)}
+.lb::after{content:"";position:absolute;left:-10px;top:100%;width:11px;height:1px;background:var(--ink);transform:rotate(-45deg);transform-origin:right}
+.lb.flip{margin-left:-10px;transform-origin:right}
+.lb.flip{translate:-100% 0}
+.lb.flip::before{left:auto;right:-13px}.lb.flip::after{left:auto;right:-10px;transform:rotate(45deg);transform-origin:left}
+.lb.off{opacity:0}
+.card .lb.where{display:none}
+.cap{position:absolute;left:8px;right:8px;bottom:8px;font:500 11.5px/1.3 var(--f-body);color:var(--ink);background:color-mix(in srgb,var(--paper) 90%,transparent);border:1px solid var(--line);padding:5px 8px;border-radius:4px;z-index:2;min-height:30px;display:flex;align-items:center;gap:6px}
+.cap b{font:700 10px var(--f-mono);color:var(--paper);background:var(--ink);padding:1px 5px;border-radius:3px;flex:none}
+.prog{position:absolute;left:0;right:0;top:0;height:3px;background:var(--hot);transform-origin:left;transform:scaleX(0);z-index:2}
+.v3d.big{position:relative;height:clamp(300px,52vh,460px);border:1.5px solid var(--ink);background:radial-gradient(ellipse at 50% 85%,color-mix(in srgb,var(--gc) 14%,var(--bg)),var(--bg) 70%);margin-bottom:6px}
+.v3d.big .lb{font-size:12px}
+.v3d.big .cap{font-size:13px;bottom:10px;left:10px;right:10px}
+.gl2{position:absolute;inset:0;width:100%;height:100%;display:block}
+.v3d-steps{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.v3d-steps li{font-size:12px;border:1px solid var(--line);padding:3px 8px;border-radius:999px;color:var(--ink-2);counter-increment:vs}
+.v3d-steps{counter-reset:vs}.v3d-steps li::before{content:counter(vs) ". ";font-family:var(--f-mono)}
+.v3d-steps li.now{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.anat-note{font-size:12px;color:var(--ink-2);margin:6px 0 0}
 @media (max-width:900px){
   .hero,.map-grid,.info-grid,.d-grid{grid-template-columns:minmax(0,1fr)}
   .stage{max-width:440px;margin:0 auto;width:100%}
@@ -247,7 +279,7 @@ footer a{word-break:break-all}
   <section id="catalog">
     <div class="sec-head">
       <div><div class="eyebrow">Анатомия ассортимента</div><h2>Каталог по группам</h2></div>
-      <p>Нажмите на карточку: откроется 3D-упаковка, разрез нанесения, состав, техданные, порядок работ и источник цены.</p>
+      <p>Над каждым продуктом идёт 3D-анимация: где применяется, каким инструментом и в каком порядке наносится. Нажмите на карточку, чтобы открыть большую сцену с шагами, разрезом, составом, техданными и источником цены.</p>
     </div>
     <div class="filters" id="filters"></div>
     <div id="groups"></div>
@@ -511,7 +543,7 @@ function filters(){
 function card(p){
   const pk=perKg(p);
   return `<button class="card" data-p="${p.id}" style="--gc:var(${GROUPS[p.g].c})">
-   <div class="pic">${p.star?'<span class="star">Хит</span>':""}${pkgSVG(p)}</div>
+   <div class="pic">${p.star?'<span class="star" style="z-index:3">Хит</span>':""}${pkgSVG(p)}<div class="v3d" data-v="${p.id}"><i class="prog"></i></div></div>
    <div class="body"><span class="chip">${GROUPS[p.g].n}</span><h4>${esc(p.n)}</h4>${p.o?`<span class="old">${esc(p.o)}</span>`:""}<p class="use">${esc(p.u)}</p>
    <div class="meta"><div class="price">${priceTxt(p)}${pk?`<small>≈ ${fmt(pk)} ₸/${p.unit||"кг"}</small>`:""}</div><div class="pack">${p.pk==="bag"?"мешок":p.pk==="kit"?"комплект":p.pk==="can"?"канистра":"ведро"}<br>${p.w} ${p.unit||"кг"}</div></div></div></button>`;
 }
@@ -520,6 +552,7 @@ function renderGroups(){
   $("#groups").innerHTML=Object.entries(GROUPS).filter(([k])=>active==="all"||active===k).map(([k,g])=>{
     const items=P.filter(p=>p.g===k&&match(p)); if(!items.length)return"";
     return `<div class="group-block"><div class="group-title"><span class="sw" style="background:var(${g.c})"></span><h3>${g.n}</h3><p>${g.d}</p></div><div class="cards">${items.map(card).join("")}</div></div>`}).join("")||`<p class="na">Ничего не найдено. Попробуйте «Emaco», «Grout» или «клей».</p>`;
+  window.v3dScan&&window.v3dScan();
 }
 $("#groups").addEventListener("click",e=>{const c=e.target.closest("[data-p]");if(c)openP(c.dataset.p)});
 
@@ -554,13 +587,14 @@ function openP(id){
    <div class="d-head" style="--gc:var(${gc})"><div class="pic3d">${pkgSVG(p,1)}</div>
     <div><span class="chip" style="--gc:var(${gc})">${GROUPS[p.g].n}</span><h3 id="dTitle" style="margin-top:6px">${esc(p.n)}</h3>${p.o?`<div class="old mono" style="font-size:12px;color:var(--ink-2)">ранее: ${esc(p.o)}</div>`:""}<p>${esc(p.u)}</p>
     <div class="price" style="font-size:22px;margin-top:10px">${priceTxt(p)} <small>${p.p?`≈ ${fmt(perKg(p))} ₸ за ${p.unit||"кг"} · розница KZ`:""}${p.extra?" · "+esc(p.extra):""}</small></div></div></div>
-   <div class="d-sec"><h5>Анатомия: разрез нанесения</h5><div class="xsec">${xsec(p)}</div></div>
+   <div class="d-sec v3d-wrap" style="--gc:var(${gc})"><h5>3D-анатомия: как и куда наносить</h5><div class="v3d big" data-v="${p.id}"><i class="prog"></i></div><ol class="v3d-steps">${window.v3dSteps?window.v3dSteps(p.id):""}</ol><p class="anat-note">Схематичная реконструкция по техкарте. Толщины слоёв показаны крупнее для наглядности.</p></div>
+   <div class="d-sec"><h5>Разрез нанесения</h5><div class="xsec">${xsec(p)}</div></div>
    <div class="d-grid"><div class="d-sec"><h5>Технические характеристики</h5><table class="spec">${Object.entries(sp).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</table></div>
     <div class="d-sec"><h5>Состав сухой смеси (схема, % по массе)</h5><div class="comp">${p.comp.map((c,i)=>`<span style="width:${c[1]}%;background:${cols[i%cols.length]};animation-delay:${i*120}ms">${c[1]>=12?c[1]+"%":""}</span>`).join("")}</div>
      <div class="comp-leg">${p.comp.map((c,i)=>`<span><i style="display:inline-block;width:9px;height:9px;background:${cols[i%cols.length]};margin-right:4px"></i>${esc(c[0])} ${c[1]}%</span>`).join("")}</div>
      <h5>Порядок работ</h5><ol class="steps">${p.steps.map(s=>`<li><span>${esc(s)}</span></li>`).join("")}</ol></div></div>
    <div class="d-sec"><h5>Источник цены</h5><p class="src">${esc(p.src)}. Пропорции состава схематичные: производитель не раскрывает рецептуру.</p></div>`;
-  $("#drawer").hidden=false; document.body.style.overflow="hidden"; $("#closeD").focus();
+  $("#drawer").hidden=false; document.body.style.overflow="hidden"; $("#closeD").focus(); window.v3dScan&&window.v3dScan();
   $("#closeD").onclick=closeD;
 }
 function closeD(){ $("#drawer").hidden=true; document.body.style.overflow=""; }
@@ -579,4 +613,514 @@ buildHero(); $("#bag3d").classList.add("exploded"); kpis(); map(); infographics(
 try{const g=localStorage.getItem("sika-g");if(g&&(g==="all"||GROUPS[g])){active=g;document.querySelectorAll("[data-g]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.g===g))}}catch(_){}
 renderGroups(); table();
 let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{const ex=$("#bag3d").classList.contains("exploded");buildHero();$("#bag3d").classList.toggle("exploded",ex)},200)});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===== 3D-анатомия нанесения: один WebGL-холст, сцены рисуются в прямоугольники карточек ===== */
+(function(){
+if(!window.THREE) return;
+const T=THREE;
+let R;
+try{const cv=document.createElement("canvas");cv.id="gl";cv.setAttribute("aria-hidden","true");document.body.appendChild(cv);
+  R=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true,powerPreference:"high-performance"});}catch(e){return}
+if(!R.getContext()) return;
+R.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));
+R.outputEncoding=T.sRGBEncoding;R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.08;
+R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;R.setClearColor(0x000000,0);R.localClippingEnabled=true;R.autoClear=false;
+document.documentElement.classList.add("webgl");
+const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- helpers ---------- */
+const V=(x,y,z)=>new T.Vector3(x,y,z);
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ph=(t,a,b)=>cl((t-a)/(b-a));
+const ss=x=>x*x*(3-2*x);
+const lerp=(a,b,k)=>a+(b-a)*k;
+let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+const shadowOn=o=>{o.castShadow=true;o.receiveShadow=true;return o};
+function mesh(g,m,p,x=0,y=0,z=0){const o=shadowOn(new T.Mesh(g,m));o.position.set(x,y,z);if(p)p.add(o);return o}
+function box(w,h,d,m,p,x,y,z){return mesh(new T.BoxGeometry(w,h,d),m,p,x,y,z)}
+function gbox(w,h,d,m,p,ax,x,y,z){const g=new T.BoxGeometry(w,h,d);
+  if(ax==="x")g.translate(w/2,0,0);if(ax==="-x")g.translate(-w/2,0,0);if(ax==="y")g.translate(0,h/2,0);if(ax==="z")g.translate(0,0,d/2);if(ax==="-z")g.translate(0,0,-d/2);
+  return mesh(g,m,p,x,y,z)}
+function cyl(rt,rb,h,m,p,x,y,z,s=24){return mesh(new T.CylinderGeometry(rt,rb,h,s),m,p,x,y,z)}
+const S0=1e-4,sc=(o,x,y,z)=>o.scale.set(Math.max(S0,x),Math.max(S0,y),Math.max(S0,z));
+function std(c,o){return new T.MeshStandardMaterial(Object.assign({color:c,roughness:.85,metalness:0},o||{}))}
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim()||"#888";
+
+/* ---------- procedural textures ---------- */
+const TX={};
+function ctex(key,w,h,draw,rep){
+  if(!TX[key]){const c=document.createElement("canvas");c.width=w;c.height=h;seed=key.length*977+13;draw(c.getContext("2d"),w,h);TX[key]=c}
+  const t=new T.CanvasTexture(TX[key]);t.encoding=T.sRGBEncoding;t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=4;t.repeat.set(rep?rep[0]:1,rep?rep[1]:1);return t}
+function grain(g,w,h,a){const d=g.getImageData(0,0,w,h),D=d.data;for(let i=0;i<D.length;i+=4){const r=(rnd()-.5)*a;D[i]+=r;D[i+1]+=r;D[i+2]+=r}g.putImageData(d,0,0)}
+function blot(g,w,h,n,col,al,r0,r1){for(let i=0;i<n;i++){const x=rnd()*w,y=rnd()*h,r=lerp(r0,r1,rnd());const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,col);gr.addColorStop(1,"rgba(0,0,0,0)");g.globalAlpha=al;g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r)}g.globalAlpha=1}
+function dots(g,w,h,n,col,r0,r1,hl){for(let i=0;i<n;i++){const x=rnd()*w,y=rnd()*h,r=lerp(r0,r1,rnd());g.fillStyle=col;g.beginPath();g.ellipse(x,y,r,r*lerp(.6,1,rnd()),rnd()*3,0,7);g.fill();if(hl){g.fillStyle=hl;g.beginPath();g.arc(x+r*.3,y+r*.3,r*.45,0,7);g.fill()}}}
+const DRAW={
+  concrete:(g,w,h)=>{g.fillStyle="#9c9d98";g.fillRect(0,0,w,h);blot(g,w,h,40,"#6f706b",.25,30,110);blot(g,w,h,30,"#c3c4bf",.25,20,90);grain(g,w,h,26);dots(g,w,h,240,"#55564f",.6,2.4,"rgba(255,255,255,.18)")},
+  broken:(g,w,h)=>{g.fillStyle="#86877f";g.fillRect(0,0,w,h);blot(g,w,h,60,"#4d4e48",.35,8,40);dots(g,w,h,160,"#b9b5a5",2,7,"rgba(0,0,0,.25)");grain(g,w,h,40)},
+  asphalt:(g,w,h)=>{g.fillStyle="#3a3b3e";g.fillRect(0,0,w,h);grain(g,w,h,46);dots(g,w,h,1800,"#77766f",.5,1.7);dots(g,w,h,300,"#222",.8,2)},
+  brick:(g,w,h)=>{g.fillStyle="#b7b0a3";g.fillRect(0,0,w,h);const bh=h/8,bw=w/4;for(let r=0;r<8;r++)for(let c=-1;c<5;c++){const x=c*bw+(r%2?bw/2:0),y=r*bh;const k=rnd();g.fillStyle=`rgb(${140+k*40|0},${58+k*22|0},${38+k*14|0})`;g.fillRect(x+3,y+3,bw-6,bh-6)}grain(g,w,h,30);dots(g,w,h,400,"rgba(40,15,8,.5)",.6,1.8)},
+  soil:(g,w,h)=>{g.fillStyle="#6a4a30";g.fillRect(0,0,w,h);blot(g,w,h,50,"#3e2a1a",.35,10,60);grain(g,w,h,40);dots(g,w,h,140,"#8d8478",1.5,6,"rgba(255,255,255,.2)")},
+  wood:(g,w,h)=>{g.fillStyle="#b98b58";g.fillRect(0,0,w,h);for(let i=0;i<70;i++){g.strokeStyle=`rgba(90,55,25,${.15+rnd()*.25})`;g.lineWidth=1+rnd()*2;g.beginPath();const y=rnd()*h;g.moveTo(0,y);for(let x=0;x<=w;x+=32)g.lineTo(x,y+Math.sin(x/60+i)*4);g.stroke()}grain(g,w,h,18)},
+  tile:(g,w,h)=>{const gr=g.createLinearGradient(0,0,w,h);gr.addColorStop(0,"#f1ede6");gr.addColorStop(1,"#e1dbd0");g.fillStyle=gr;g.fillRect(0,0,w,h);grain(g,w,h,6)},
+  porcelain:(g,w,h)=>{g.fillStyle="#c2b39c";g.fillRect(0,0,w,h);blot(g,w,h,30,"#a49276",.3,20,80);dots(g,w,h,900,"#8f8068",.4,1.3);grain(g,w,h,12)},
+  marble:(g,w,h)=>{g.fillStyle="#ebe8e2";g.fillRect(0,0,w,h);blot(g,w,h,20,"#cfcac0",.3,30,120);for(let i=0;i<14;i++){g.strokeStyle=`rgba(110,105,98,${.15+rnd()*.35})`;g.lineWidth=.6+rnd()*2.2;g.beginPath();let x=rnd()*w,y=0;g.moveTo(x,y);while(y<h){x+=(rnd()-.5)*50;y+=20+rnd()*30;g.lineTo(x,y)}g.stroke()}grain(g,w,h,6)},
+  aerated:(g,w,h)=>{g.fillStyle="#e4e1d8";g.fillRect(0,0,w,h);grain(g,w,h,16);dots(g,w,h,900,"#b7b2a5",.5,2.2)},
+  mortar:(g,w,h)=>{g.fillStyle="#8f8e88";g.fillRect(0,0,w,h);blot(g,w,h,30,"#6e6d68",.25,10,50);grain(g,w,h,24);dots(g,w,h,300,"#b6b4ac",.4,1.2)},
+  plaster:(g,w,h)=>{g.fillStyle="#c9c6be";g.fillRect(0,0,w,h);grain(g,w,h,14);dots(g,w,h,500,"#a8a59c",.4,1.1)},
+  screed:(g,w,h)=>{g.fillStyle="#a8a59c";g.fillRect(0,0,w,h);blot(g,w,h,40,"#8b887f",.3,20,90);grain(g,w,h,18);dots(g,w,h,200,"#6f6c64",.4,1.4)},
+  rubber:(g,w,h)=>{g.fillStyle="#1d1d1f";g.fillRect(0,0,w,h);for(let x=0;x<w;x+=16){g.fillStyle="#2b2b2e";g.fillRect(x,0,8,h)}grain(g,w,h,10)}
+};
+const tex=(k,rep)=>ctex(k,512,512,DRAW[k],rep);
+function texMat(k,rep,o){const m=tex(k,rep);return std(0xffffff,Object.assign({map:m,bumpMap:m,bumpScale:.012},o||{}))}
+
+/* ---------- tools ---------- */
+const steel=()=>std(0xb9bcc0,{metalness:.85,roughness:.32});
+const woodM=()=>texMat("wood",[.3,.3],{roughness:.6});
+function trowel(){const g=new T.Group();box(.34,.008,.15,steel(),g,0,0,0);cyl(.008,.008,.08,steel(),g,0,.04,-.02).rotation.x=.5;const h=cyl(.022,.026,.15,woodM(),g,0,.09,-.05);h.rotation.x=Math.PI/2.4;return g}
+function notched(){const g=trowel();const s=steel();for(let i=0;i<9;i++)box(.022,.008,.025,s,g,-.15+i*.038,0,.085);return g}
+function spatula(w=.5){const g=new T.Group();box(w,.006,.12,steel(),g,0,0,0);box(w*.9,.03,.03,std(0x2a3540,{roughness:.5}),g,0,.015,-.05);const h=cyl(.02,.02,.16,std(0x22303c,{roughness:.5}),g,0,.06,-.12);h.rotation.x=Math.PI/2.6;return g}
+function brush(){const g=new T.Group();box(.12,.07,.04,std(0xd8c49a,{roughness:1}),g,0,0,0);box(.12,.03,.045,steel(),g,0,.05,0);const h=box(.05,.2,.03,woodM(),g,0,.16,0);return g}
+function wirebrush(){const g=new T.Group();box(.18,.03,.05,woodM(),g,0,.03,0);for(let i=0;i<10;i++)box(.012,.03,.04,steel(),g,-.08+i*.018,0,0);return g}
+function roller(col=0xe9dfc8){const g=new T.Group();const r=cyl(.045,.045,.25,std(col,{roughness:1}),g,0,0,0);r.rotation.z=Math.PI/2;const f=steel();cyl(.006,.006,.16,f,g,.13,.08,0).rotation.z=.3;cyl(.006,.006,.14,f,g,.05,.15,0).rotation.z=Math.PI/2;const p=cyl(.014,.014,1.1,std(0x2d6cd1,{roughness:.4}),g,-.02,.7,0);p.rotation.z=.12;return g}
+function bucket(col){const g=new T.Group();const b=mesh(new T.CylinderGeometry(.17,.14,.32,32,1,true),std(col,{roughness:.45,side:T.DoubleSide}),g,0,.16,0);cyl(.14,.14,.01,std(col),g,0,.005,0);const h=mesh(new T.TorusGeometry(.17,.006,6,24,Math.PI),steel(),g,0,.32,0);return g}
+function glove(col=0x2d7bd6){const g=new T.Group(),m=std(col,{roughness:.55});const palm=mesh(new T.SphereGeometry(.07,16,12),m,g);palm.scale.set(1,.45,1.25);for(let i=0;i<4;i++){const f=cyl(.016,.014,.09,m,g,-.045+i*.03,.0,.11);f.rotation.x=Math.PI/2}const th=cyl(.017,.015,.07,m,g,.08,0,.03);th.rotation.set(Math.PI/2,0,-.7);const cuff=cyl(.065,.06,.12,m,g,0,0,-.12);cuff.rotation.x=Math.PI/2;return g}
+function rubberFloat(){const g=new T.Group();box(.3,.025,.12,std(0x2b2b2e,{roughness:.9}),g,0,0,0);box(.3,.018,.12,std(0xe2702a,{roughness:.5}),g,0,.022,0);const h=box(.04,.06,.1,std(0xe2702a,{roughness:.5}),g,0,.06,0);return g}
+function sponge(){const m=mesh(new T.BoxGeometry(.18,.06,.12),std(0xf0c419,{roughness:1}));return m}
+function rule(len=1.8){const g=new T.Group();box(len,.1,.025,std(0xc9cdd2,{metalness:.7,roughness:.35}),g,0,0,0);return g}
+function powerTrowel(){const g=new T.Group(),s=steel();mesh(new T.TorusGeometry(.42,.02,8,40),std(0xd9b21c,{metalness:.4,roughness:.4}),g,0,.07,0).rotation.x=Math.PI/2;const blades=new T.Group();g.add(blades);for(let i=0;i<4;i++){const b=box(.36,.008,.1,s,blades,0,.02,0);b.position.x=Math.cos(i*Math.PI/2)*.2;b.position.z=Math.sin(i*Math.PI/2)*.2;b.rotation.y=-i*Math.PI/2}cyl(.06,.08,.18,std(0xd9b21c,{metalness:.3,roughness:.5}),g,0,.16,0);box(.16,.1,.12,std(0x333,{roughness:.6}),g,0,.3,0);const h=cyl(.014,.014,1.2,s,g,0,.62,-.42);h.rotation.x=-.75;box(.5,.02,.02,s,g,0,.98,-.86);g.userData.blades=blades;return g}
+function spikeRoller(){const g=new T.Group();const c=cyl(.05,.05,.5,std(0x444,{roughness:.6}),g,0,0,0);c.rotation.z=Math.PI/2;const sm=std(0x999,{metalness:.6,roughness:.4});for(let i=0;i<11;i++)for(let k=0;k<8;k++){const a=k/8*Math.PI*2;const sp=cyl(.002,.006,.05,sm,g,-.22+i*.044,Math.cos(a)*.07,Math.sin(a)*.07,4);sp.rotation.x=a+Math.PI/2}const p=cyl(.012,.012,1.2,steel(),g,0,.55,-.25);p.rotation.x=-.45;g.userData.drum=c;return g}
+function gun(){const g=new T.Group(),m=std(0xc23a2b,{roughness:.4,metalness:.3});const b=cyl(.03,.03,.3,std(0xdedad2,{roughness:.5}),g,0,0,0);b.rotation.z=Math.PI/2;const n=cyl(.002,.014,.1,std(0xf1efe8,{roughness:.4}),g,.2,0,0);n.rotation.z=-Math.PI/2;box(.04,.12,.03,m,g,-.12,-.07,0);box(.03,.1,.025,m,g,-.06,-.07,0);return g}
+function wheel(){const g=new T.Group();const tyre=mesh(new T.TorusGeometry(.32,.12,14,40),std(0x1b1b1d,{roughness:.85}),g);const rim=cyl(.25,.25,.2,std(0xa9adb2,{metalness:.85,roughness:.3}),g,0,0,0,28);rim.rotation.x=Math.PI/2;return g}
+
+/* ---------- scene base ---------- */
+function base(){
+  const s=new T.Scene(),cam=new T.PerspectiveCamera(32,1.4,.05,60);
+  s.add(new T.HemisphereLight(0xf3f6ff,0x5a5246,.72));
+  const d=new T.DirectionalLight(0xfff1dc,1.35);d.position.set(3.5,6,5);d.castShadow=true;d.shadow.mapSize.set(1024,1024);
+  Object.assign(d.shadow.camera,{left:-3.5,right:3.5,top:3.5,bottom:-3.5,near:.5,far:25});d.shadow.bias=-.0004;d.shadow.normalBias=.02;s.add(d);s.add(d.target);
+  const f=new T.DirectionalLight(0xbcd3ff,.4);f.position.set(-5,2.5,-1);s.add(f);
+  const gp=new T.Mesh(new T.PlaneGeometry(14,14),new T.ShadowMaterial({opacity:.22}));gp.rotation.x=-Math.PI/2;gp.receiveShadow=true;s.add(gp);
+  return {s,cam,dl:d,ground:gp};
+}
+function prodMat(p,o){const c=new T.Color("#a19f98").lerp(new T.Color(css(GROUPS[p.g].c)),.2);return std(c,Object.assign({map:tex("mortar",[2,2]),bumpMap:tex("mortar",[2,2]),bumpScale:.02,roughness:.92},o||{}))}
+function pointsSys(n,col,size){const g=new T.BufferGeometry();g.setAttribute("position",new T.BufferAttribute(new Float32Array(n*3),3));const m=new T.PointsMaterial({color:col,size,sizeAttenuation:true,transparent:true,opacity:.85,depthWrite:false});const pts=new T.Points(g,m);pts.frustumCulled=false;pts.userData.seeds=Array.from({length:n},()=>[rnd(),rnd(),rnd(),rnd()]);return pts}
+const thk=p=>p.t?`${String(p.t[0]).replace(".",",")}–${p.t[1]} мм`:"";
+const short=p=>p.n.replace(/\s*\(.*\)/,"");
+function park(o,t,a,b,from,to){/* move tool between park and work positions */const k=ss(ph(t,a,a+.5))*(1-ss(ph(t,b-.5,b)));o.visible=k>.01;return k}
+
+/* ===================== ARCHETYPES ===================== */
+const A={};
+
+/* 1. Конструкционный ремонт: стена/колонна или потолок/пролёт моста */
+A.repair=(c,p,v)=>{
+  const G=new T.Group();c.s.add(G);const conc=texMat("concrete",[1.5,1]);const W=3,H=2,D=.5,cw=1.4,ch=.9,cd=.14;
+  box((W-cw)/2,H,D,conc,G,-(W+cw)/4,0,-D/2);box((W-cw)/2,H,D,conc,G,(W+cw)/4,0,-D/2);
+  box(cw,(H-ch)/2,D,conc,G,0,(H+ch)/4,-D/2);box(cw,(H-ch)/2,D,conc,G,0,-(H+ch)/4,-D/2);
+  const backM=texMat("broken",[1,.7]);box(cw,ch,D-cd,backM,G,0,0,-cd-(D-cd)/2);
+  const brk=texMat("broken",[.3,.3]);for(let i=0;i<34;i++){const r=.02+rnd()*.05,side=rnd()*4|0,u=rnd()-.5;let x=side<2?u*cw:(side==2?-cw/2:cw/2)+(rnd()-.5)*.05,y=side<2?(side?ch/2:-ch/2)+(rnd()-.5)*.05:u*ch;const d=mesh(new T.DodecahedronGeometry(r,0),brk,G,x*.97,y*.97,-rnd()*cd);d.rotation.set(rnd()*3,rnd()*3,0)}
+  const rust=new T.Color(0x7c3f1c),stl=new T.Color(0x6f7377),rebM=std(0x7c3f1c,{metalness:.55,roughness:.6});
+  const bars=[];[-.22,.22].forEach(y=>{const b=cyl(.022,.022,W-.06,rebM,G,0,y,-.085,10);b.rotation.z=Math.PI/2;bars.push(b)});
+  [-.4,.4].forEach(x=>cyl(.02,.02,H-.06,rebM,G,x,0,-.115,10));
+  const pm=prodMat(p),n=5,sh=ch/n,strips=[];for(let i=0;i<n;i++)strips.push(gbox(cw-.004,sh,cd+.014,pm,G,"z",0,-ch/2+sh*(i+.5),-cd));
+  const tr=trowel();G.add(tr);tr.traverse(shadowOn);const wb=wirebrush();G.add(wb);
+  const spray=pointsSys(220,0xbfe0ff,.025);G.add(spray);
+  const film=new T.Mesh(new T.PlaneGeometry(1.9,1.3,20,14),std(0xd5e6ff,{transparent:true,opacity:0,roughness:.15,depthWrite:false,side:T.DoubleSide}));film.position.z=.07;G.add(film);
+  {const pa=film.geometry.attributes.position;for(let i=0;i<pa.count;i++)pa.setZ(i,Math.sin(pa.getX(i)*7)*.012+Math.cos(pa.getY(i)*9)*.01);film.geometry.computeVertexNormals()}
+  const soffit=v==="soffit";
+  if(soffit){G.rotation.x=Math.PI/2;G.position.y=1.5;const pier=box(.5,1.25,.5,conc,c.s,1,.62,-.2);}
+  else G.position.y=1.05;
+  const L=10,t0=3.9,dur=.78;
+  return {L,G,
+    cam:soffit?{tg:V(0,1.2,0),r:4.6,az:.5,el:-.12,fov:34}:{tg:V(0,1,0),r:4.3,az:.55,el:.18,fov:34},
+    steps:[[0,"Вскрыт дефект: слабый бетон удалён, арматура в ржавчине"],[1.6,"Очистка арматуры щёткой до металла"],[2.8,"Увлажнение основания до матово-влажного"],[t0,`Нанесение ${short(p)} кельмой, ${thk(p)} за проход`],[7.9,"Уход: плёнка или влажный уход 24 ч"]],
+    labels:[[G,V(-1.15,.72,.01),"Бетон"],[G,V(.62,.22,-.06),"Арматура",0,3.9],[G,V(-.35,-.05,.03),`${short(p)} · ${thk(p)}`,4.4],[G,V(1.05,-.82,.02),"Где: "+(p.where||"")]],
+    update(t){
+      const k=ph(t,1.6,2.8);rebM.color.copy(rust).lerp(stl,ss(k));rebM.metalness=lerp(.4,.85,k);rebM.roughness=lerp(.75,.35,k);
+      backM.color.setScalar(lerp(1,.72,ss(ph(t,2.8,3.6))));
+      strips.forEach((s,i)=>sc(s,1,1,ss(ph(t,t0+i*dur,t0+(i+.85)*dur))));
+      // wire brush
+      const wk=park(wb,t,1.5,2.9);const wp=ph(t,1.6,2.8);wb.position.set(lerp(1.4,Math.sin(wp*Math.PI*4)*.5,wk),lerp(-.3,.22+.03,wk),lerp(.5,-.03,wk));wb.rotation.set(Math.PI/2,0,0);
+      // spray
+      const sp=spray.geometry.attributes.position,on=t>2.8&&t<3.8;spray.visible=on;if(on)spray.userData.seeds.forEach((s,i)=>{const q=(t*1.8+s[0])%1;sp.setXYZ(i,lerp(1.2,(s[1]-.5)*cw,q),lerp(.5,(s[2]-.5)*ch,q)-q*q*.15,lerp(.6,-cd+.01,q))});sp.needsUpdate=true;
+      // trowel
+      const tk=park(tr,t,t0-.3,t0+n*dur+.4);const i=cl(Math.floor((t-t0)/dur),0,n-1),lp=((t-t0)/dur)%1;
+      tr.position.set(lerp(1.5,Math.sin(lp*Math.PI*2)*.45,tk),lerp(-.6,-ch/2+sh*(i+.5),tk),lerp(.5,.03,tk));tr.rotation.set(lerp(.9,Math.PI/2-.25,tk),0,Math.sin(lp*6)*.15);
+      film.material.opacity=ss(ph(t,8,8.7))*.38;
+    }};
+};
+
+/* 2. Тонкослойная шпатлёвка/выравнивание */
+A.skim=(c,p)=>{
+  const G=new T.Group();c.s.add(G);G.position.y=1.05;const W=3,H=2;
+  const wall=box(W,H,.3,texMat("broken",[2,1.4],{bumpScale:.03}),G,0,0,-.15);
+  const pm=prodMat(p,{roughness:.7,map:tex("plaster",[2,2]),bumpMap:null});const bands=[];const n=3,bh=H/n;
+  for(let i=0;i<n;i++)bands.push(gbox(W-.02,bh-.004,.012,pm,G,"x",-W/2+.01,H/2-bh*(i+.5),.006));
+  const sp=spatula(.55);G.add(sp);const br=brush();G.add(br);
+  const L=9.5,t0=2.6,dur=1.9;
+  return {L,G,cam:{tg:V(0,1,0),r:4.4,az:.7,el:.12,fov:34},
+    steps:[[0,"Основание с порами и раковинами"],[1.3,"Обеспыливание и увлажнение"],[t0,`${short(p)}: шпатлевание ${thk(p)} широким шпателем`],[8.3,"Ровная плотная поверхность под окраску и защиту"]],
+    labels:[[G,V(-1.3,-.8,.01),"Бетон с раковинами"],[G,V(1.4,.5,.03),`${short(p)} · ${thk(p)}`,3.5],[G,V(.9,-.85,.03),"Где: "+(p.where||"")]],
+    update(t){
+      bands.forEach((b,i)=>sc(b,ss(ph(t,t0+i*dur,t0+(i+.92)*dur)),1,1));
+      const bk=park(br,t,1.2,2.6),bp=ph(t,1.3,2.5);br.position.set(lerp(1.7,(bp*2-1)*1.2,bk),lerp(-.6,Math.sin(bp*30)*.4,bk),lerp(.4,.05,bk));br.rotation.set(Math.PI/2,0,0);
+      const k=park(sp,t,t0-.3,t0+n*dur+.3),i=cl(Math.floor((t-t0)/dur),0,n-1),lp=((t-t0)/dur)%1;
+      sp.position.set(lerp(1.8,-W/2+.3+lp*(W-.6),k),lerp(-.6,H/2-bh*(i+.5),k),lerp(.4,.05,k));sp.rotation.set(lerp(1,Math.PI/2-.2,k),Math.PI/2,0);
+    }};
+};
+
+/* 3. Дорога: заливка вокруг рамы люка + колесо */
+A.road=(c,p)=>{
+  const G=new T.Group();c.s.add(G);const as=texMat("asphalt",[1.4,1.4],{roughness:.95,bumpScale:.02});const S=3.2,hs=.65,th=.28;
+  box(S,th,(S-2*hs)/2,as,G,0,th/2,-(S/2+hs)/2);box(S,th,(S-2*hs)/2,as,G,0,th/2,(S/2+hs)/2);
+  box((S-2*hs)/2,th,2*hs,as,G,-(S/2+hs)/2,th/2,0);box((S-2*hs)/2,th,2*hs,as,G,(S/2+hs)/2,th/2,0);
+  box(2*hs,.06,2*hs,texMat("broken",[.6,.6]),G,0,.03,0);
+  const lm=std(0xf2f0e8,{roughness:.6});for(let i=0;i<3;i++)box(.5,.005,.08,lm,G,-1.3+i*1.05,th+.003,1.15);
+  const iron=std(0x2e3033,{metalness:.65,roughness:.5});const frame=new T.Group();G.add(frame);
+  [[0,.46],[0,-.46],[.46,0],[-.46,0]].forEach(([x,z],i)=>box(i<2?1.02:.1,.12,i<2?.1:.82,iron,frame,x,0,z));
+  const cover=cyl(.4,.4,.05,iron,frame,0,.03,0,40);for(let i=0;i<7;i++)box(.6,.012,.03,std(0x3a3c40,{metalness:.6,roughness:.5}),frame,0,.06,-.27+i*.09);
+  const pm=prodMat(p);const fills=[[0,.56,1.3,.18],[0,-.56,1.3,.18],[.56,0,.18,.94],[-.56,0,.18,.94]].map(([x,z,w,d])=>gbox(w,th-.07,d,pm,G,"y",x,.06,z));
+  const bk=bucket(0xd8dde2);G.add(bk);bk.traverse(shadowOn);
+  const stream=new T.Mesh(new T.CylinderGeometry(.03,.05,1,10,1,true),std(0x9a9890,{roughness:.6}));G.add(stream);
+  const wh=wheel();G.add(wh);wh.traverse(shadowOn);
+  const L=10;
+  return {L,G,cam:{tg:V(0,.25,0),r:5,az:.6,el:.55,fov:32},
+    steps:[[0,"Вырубка разрушенного бетона вокруг люка, глубина ≥ 20 мм"],[1.5,"Рама люка выставляется в проектное положение"],[3,`Заливка ${short(p)} вокруг рамы, ${thk(p)}`],[7.2,"Через ≈ 1 ч открывают движение"]],
+    labels:[[G,V(-1.3,th,-1),"Асфальт"],[G,V(.1,.2,-.46),"Рама люка"],[G,V(.6,.2,.56),`${short(p)} · ${thk(p)}`,4],[G,V(1.2,th,1.3),"Где: "+(p.where||"")]],
+    update(t){
+      frame.position.y=lerp(.75,th-.1,ss(ph(t,1.5,2.8)));frame.visible=t>1.4;
+      fills.forEach((f,i)=>sc(f,1,ss(ph(t,3.1+i*.8,4+i*.8)),1));
+      const k=park(bk,t,2.6,7);const pour=ph(t,3,6.6);const ang=lerp(0,1.9,ss(ph(t,2.9,3.4)))*(1-ss(ph(t,6.4,6.9)));
+      const ox=lerp(-.56,.56,pour>.5?1:0),oz=lerp(.56,-.56,(pour*2)%1);
+      bk.position.set(lerp(-2,-.2,k),lerp(.4,.95,k),lerp(1.8,.3,k));bk.rotation.set(0,0,-ang);
+      const on=ang>1.2&&t<6.6;stream.visible=on;if(on){const lip=V(bk.position.x+.15,bk.position.y+.08,bk.position.z);const tgt=V(.35,.15,.45);const mid=lip.clone().add(tgt).multiplyScalar(.5);stream.position.copy(mid);stream.scale.set(1,lip.distanceTo(tgt),1);stream.lookAt(tgt);stream.rotateX(Math.PI/2)}
+      const wk=ph(t,7.4,9.8);wh.visible=t>7.3;wh.position.set(lerp(-2.6,2.6,wk),th+.44,0);wh.rotation.set(0,0,-wk*16);wh.rotation.y=0;
+    }};
+};
+
+/* 4. Гидропломба: струя воды из трещины останавливается */
+A.plug=(c,p)=>{
+  const G=new T.Group();c.s.add(G);const conc=texMat("concrete",[1.6,1.2]);
+  box(3.2,2.2,.4,conc,G,0,1.1,-.2);box(3.2,.12,1.8,texMat("screed",[2,1]),G,0,.06,.7);
+  const crk=std(0x1b1c1e,{roughness:1});let x=-.2,y=2.1;const P=V(.05,1.15,0);for(let i=0;i<14;i++){const nx=x+(rnd()-.5)*.18+(P.x-x)*.08,ny=y-.14;const seg=box(.012,.16,.02,crk,G,(x+nx)/2,(y+ny)/2,.002);seg.rotation.z=Math.atan2(nx-x,.14);x=nx;y=ny}
+  const groove=box(.12,.16,.06,std(0x3a3a3a,{roughness:1}),G,P.x,P.y,-.02);
+  const water=pointsSys(520,0x7fbfff,.028);G.add(water);
+  const wm=new T.MeshStandardMaterial({color:0x7aa9d6,roughness:.05,metalness:.1,transparent:true,opacity:.55});const puddle=mesh(new T.CircleGeometry(.9,40),wm,G,P.x,.125,.55);puddle.rotation.x=-Math.PI/2;
+  const pm=prodMat(p);const plug=mesh(new T.SphereGeometry(.09,20,14),pm,G);const gl=glove();G.add(gl);gl.traverse(shadowOn);
+  const coat=gbox(1.1,1.1,.01,prodMat(p,{roughness:.75}),G,"x",P.x-.55,P.y,.006);
+  const br=brush();G.add(br);
+  const L=10.5;
+  return {L,G,cam:{tg:V(0,1.05,.2),r:4.6,az:.65,el:.16,fov:34},
+    steps:[[0,"Активная протечка: вода под давлением через трещину"],[1.2,"Трещина расшивается «ласточкиным хвостом» ≥ 20 мм"],[2.4,`Порция ${short(p)} вдавливается рукой в течь`],[3.6,"Удерживать 2–4 мин: схватывание, течь остановлена"],[7,"Сверху обмазочная гидроизоляция (501 / Seal-107)"]],
+    labels:[[G,V(-1.2,1.9,.01),"Стена подвала"],[G,V(P.x+.08,P.y,.02),`${short(p)} · 2–4 мин`,3.4],[G,V(P.x,.13,.9),"Вода",0,5.5],[G,V(1.1,.4,.01),"Где: "+(p.where||"")]],
+    update(t){
+      const flow=1-ss(ph(t,3.6,5.2));groove.visible=t>1.2;sc(groove,1,1,ss(ph(t,1.2,2.2)));
+      const wp=water.geometry.attributes.position;water.visible=flow>.02;
+      water.userData.seeds.forEach((s,i)=>{const age=(t*1.3+s[0])%1;const vz=(1.4+s[1]*.8)*flow,vx=(s[2]-.5)*.6*flow,vy=(s[3]-.3)*.6*flow;let px=P.x+vx*age,py=P.y+vy*age-4.9*age*age*.55,pz=.03+vz*age;if(py<.13){py=.13}if(s[0]>flow+.02)py=-5;wp.setXYZ(i,px,py,pz)});wp.needsUpdate=true;
+      puddle.scale.setScalar(lerp(.2,1,ss(ph(t,0,3)))*(1-ss(ph(t,8.5,10.3))*.6));wm.opacity=.5*(1-ss(ph(t,9,10.4)));
+      const gk=park(gl,t,2.2,6.6),push=ss(ph(t,3,3.6));
+      gl.position.set(lerp(1.6,P.x+.02,gk),lerp(.6,P.y,gk),lerp(1.2,lerp(.32,.15,push),gk));gl.rotation.set(0,lerp(-.6,0,gk),0);gl.rotation.x=-Math.PI/2*.0;gl.lookAt(G.localToWorld(P.clone()));
+      plug.visible=t>2.2;const ps=lerp(1,.75,push);plug.position.set(P.x,P.y,lerp(gl.position.z-.06,.02,push));plug.scale.set(ps*1.05,ps*1.1,lerp(1,.35,push));if(t<3){plug.position.set(gl.position.x,gl.position.y,gl.position.z-.08)}
+      sc(coat,ss(ph(t,7.2,9.6)),1,1);const bk=park(br,t,7,9.8),bp=ph(t,7.2,9.6);br.position.set(lerp(1.6,P.x-.5+bp*1.1,bk),lerp(.6,P.y+Math.sin(bp*40)*.45,bk),lerp(1,.06,bk));br.rotation.set(Math.PI/2,0,0);
+    }};
+};
+
+/* 5. Обмазочная/проникающая гидроизоляция подвала с разрезом грунта */
+A.coat=(c,p,v)=>{
+  const G=new T.Group();c.s.add(G);const conc=texMat("concrete",[1.5,1.2]);const W=2.8,H=2,D=.35;
+  box(W,H,D,conc,G,0,H/2+.15,-D/2);box(W,1.9,.9,texMat("soil",[1.4,1]),G,0,.95+.15,-D-.45);box(W+.2,.15,2,texMat("concrete",[2,1]),G,0,.075,.3);
+  const drops=pointsSys(160,0x6fb4ff,.03);G.add(drops);
+  const m1=prodMat(p,{roughness:.8}),m2=prodMat(p,{roughness:.7});m2.color.offsetHSL(0,0,.06);
+  const n=4,coat1=[],coat2=[];for(let i=0;i<n;i++){coat1.push(gbox(W-.04,H/n-.002,.008,m1,G,"x",-W/2+.02,.15+H-(H/n)*(i+.5),.004))}
+  for(let i=0;i<n;i++){coat2.push(gbox(W/n-.002,H-.04,.008,m2,G,"y",-W/2+(W/n)*(i+.5),.17,.012))}
+  let crystals=null;if(v==="cryst"){const g=new T.OctahedronGeometry(.012,0);crystals=new T.InstancedMesh(g,std(0xf4f1e6,{roughness:.2,metalness:.1,emissive:0x333333}),260);const mtx=new T.Matrix4();crystals.userData.pos=[];for(let i=0;i<260;i++){const pz=-rnd()*.14,py=.25+rnd()*(H-.2);crystals.userData.pos.push([W/2+.006,py,pz,rnd()*.8]);}G.add(crystals);crystals.frustumCulled=false}
+  const br=brush();G.add(br);
+  const L=11;const t1=1.6,t2=5.4;
+  const steps=v==="cryst"?[[0,"Подвал: грунтовая вода давит на стену"],[.8,"Очистка и обильное увлажнение бетона"],[t1,`${short(p)}: 1-й слой кистью ≈ 1 кг/м²`],[t2,"2-й слой через 2–4 ч по свежему первому"],[8.6,"Кристаллы растут в капиллярах и закупоривают их"]]
+    :[[0,"Подвал / бассейн: защита от напорной воды"],[.8,"Увлажнение основания; смешивание A + B"],[t1,`${short(p)}: 1-й слой кистью`],[t2,"2-й слой крест-накрест через 3–6 ч"],[8.6,"Итог 2–3 мм жёстко-эластичной гидроизоляции"]];
+  return {L,G,cam:{tg:V(.4,1.1,-.2),r:4.8,az:.95,el:.2,fov:34},steps,
+    labels:[[G,V(W/2,1.8,-D-.5),"Грунт + вода"],[G,V(W/2,1.5,-D/2),"Стена"],[G,V(-.6,.9,.02),`${short(p)}`,2],[G,V(W/2+.01,.6,-.05),"Кристаллизация",8.6,v==="cryst"?11:0],[G,V(-1,.4,.02),"Где: "+(p.where||"")]],
+    update(t){
+      const dp=drops.geometry.attributes.position;const block=ss(ph(t,8.6,10.5));
+      drops.userData.seeds.forEach((s,i)=>{const q=(t*.35+s[0])%1;const z=lerp(-D-.85,v==="cryst"?lerp(-.02,-D,block):-D,q);dp.setXYZ(i,-W/2+s[1]*W,.3+s[2]*1.6,Math.max(z,-D-.85))});dp.needsUpdate=true;
+      coat1.forEach((b,i)=>sc(b,ss(ph(t,t1+i*.9,t1+(i+.9)*.9)),1,1));coat2.forEach((b,i)=>sc(b,1,ss(ph(t,t2+i*.75,t2+(i+.9)*.75)),1));
+      const bk=park(br,t,t1-.3,t2+4*.75+.3);let bx,by;if(t<t2){const i=cl(Math.floor((t-t1)/.9),0,n-1),lp=((t-t1)/.9)%1;bx=-W/2+.1+lp*(W-.2);by=.15+H-(H/n)*(i+.5)+Math.sin(lp*30)*.12}else{const i=cl(Math.floor((t-t2)/.75),0,n-1),lp=((t-t2)/.75)%1;bx=-W/2+(W/n)*(i+.5)+Math.sin(lp*30)*.12;by=.2+lp*(H-.1)}
+      br.position.set(lerp(2,bx,bk),lerp(.5,by,bk),lerp(1,.08,bk));br.rotation.set(Math.PI/2,0,0);
+      if(crystals){const m=new T.Matrix4(),q=new T.Quaternion(),s=new T.Vector3();crystals.userData.pos.forEach((a,i)=>{const k=ss(ph(t,8.6+a[3],9.6+a[3]));s.setScalar(Math.max(S0,k*(1+(i%3)*.4)));q.setFromEuler(new T.Euler(i,i*.7,0));m.compose(V(a[0],a[1],a[2]),q,s);crystals.setMatrixAt(i,m)});crystals.instanceMatrix.needsUpdate=true}
+    }};
+};
+
+/* 6. Подливка под оборудование */
+A.grout=(c,p)=>{
+  const G=new T.Group();c.s.add(G);const conc=texMat("concrete",[1.4,.8]);
+  box(2.8,.8,1.7,conc,G,0,.4,0);const gap=.12,top=.8;
+  const stl=std(0x5b6670,{metalness:.7,roughness:.45});for(const x of[-.75,0,.75])for(const z of[-.38,.38])box(.12,gap,.1,std(0x8a8f95,{metalness:.8,roughness:.4}),G,x,top+gap/2,z);
+  const plate=box(1.9,.06,1,stl,G,0,top+gap+.03,0);
+  for(const x of[-.82,.82])for(const z of[-.4,.4]){cyl(.025,.025,.3,steel(),G,x,top+.12,z,10);cyl(.05,.05,.04,std(0x9aa0a6,{metalness:.8,roughness:.3}),G,x,top+gap+.08,z,6)}
+  const paint=std(0x2e5c8a,{metalness:.35,roughness:.45});const motor=cyl(.3,.3,.9,paint,G,-.25,top+gap+.4,0,32);motor.rotation.z=Math.PI/2;for(let i=0;i<10;i++){const f=cyl(.31,.31,.02,paint,G,-.62+i*.08,top+gap+.4,0,32);f.rotation.z=Math.PI/2}
+  const pump=cyl(.26,.26,.24,std(0x8e2e2e,{metalness:.3,roughness:.5}),G,.55,top+gap+.38,0,32);pump.rotation.x=Math.PI/2;box(1.4,.1,.5,paint,G,-.1,top+gap+.11,0);
+  const wd=texMat("wood",[.6,.2],{roughness:.7});const fh=.22;
+  const fB=box(2.5,fh,.04,wd,G,0,top+fh/2,-.62);const fL=box(.04,fh,1.28,wd,G,1.18,top+fh/2,0);
+  const fF=box(2.5,fh,.04,std(0xd9b989,{transparent:true,opacity:.18,roughness:.6,depthWrite:false}),G,0,top+fh/2,.62);
+  const head=new T.Group();G.add(head);box(.04,.5,1.28,wd,head,-1.5,top+.25,0);box(.32,.5,.04,wd,head,-1.34,top+.25,-.62);box(.32,.5,.04,wd,head,-1.34,top+.25,.62);
+  const pm=prodMat(p,{roughness:.6});const grout=gbox(2.66,gap+.05,1.22,pm,G,"x",-1.48,top+(gap+.05)/2,0);const headFill=gbox(.3,.4,1.2,pm,G,"y",-1.33,top,0);
+  const bk=bucket(0xd8dde2);G.add(bk);bk.traverse(shadowOn);const stream=new T.Mesh(new T.CylinderGeometry(.035,.05,1,10,1,true),pm);G.add(stream);
+  const L=10;
+  return {L,G,cam:{tg:V(-.1,.95,0),r:4.9,az:.45,el:.32,fov:34},
+    steps:[[0,"Опалубка; основание насыщено водой 6–24 ч"],[1.2,`Замес ${short(p)} целым мешком 5 мин`],[2,"Заливка с одной стороны через загрузочный короб"],[3.2,`Раствор течёт под плиту без вибрирования, зазор ${thk(p)}`],[8.2,"Влажный уход по открытым кромкам"]],
+    labels:[[G,V(-1.1,.3,.85),"Фундамент"],[G,V(.9,top+gap+.04,.5),"Опорная плита"],[G,V(.82,top+.16,.4),"Анкер"],[G,V(1.18,top+fh,-.2),"Опалубка"],[G,V(.2,top+.05,.62),`${short(p)} · ${thk(p)}`,3.5],[G,V(-.4,top+gap+.72,0),"Где: "+(p.where||"")]],
+    update(t){
+      const pr=ss(ph(t,2.4,7.6));sc(grout,pr,1,1);sc(headFill,1,lerp(.1,1,ss(ph(t,2.1,3)))*(1-.55*ss(ph(t,7,8))),1);headFill.visible=t>2.1;
+      const k=park(bk,t,1.6,7.2);const ang=lerp(0,2,ss(ph(t,1.9,2.4)))*(1-ss(ph(t,6.6,7.1)));bk.position.set(lerp(-2.6,-1.55,k),lerp(.6,1.75,k),lerp(1.4,0,k));bk.rotation.set(0,0,-ang);
+      const on=ang>1.2;stream.visible=on;if(on){const lip=V(bk.position.x+.17,bk.position.y+.05,0),tg=V(-1.33,top+.3,0);stream.position.copy(lip.clone().add(tg).multiplyScalar(.5));stream.scale.set(1,lip.distanceTo(tg),1);stream.lookAt(tg);stream.rotateX(Math.PI/2)}
+    }};
+};
+
+/* 7. Плитка: стена/пол, мозаика, керамогранит, камень, тёплый пол */
+A.tile=(c,p,v)=>{
+  const G=new T.Group();c.s.add(G);const wall=v==="wall"||v==="mosaic";
+  const cfg={wall:[4,3,.48,"tile"],mosaic:[10,7,.19,"tile"],large:[3,2,.78,"porcelain"],stone:[3,2,.72,"marble"],heated:[4,3,.56,"porcelain"]}[v]||[4,3,.5,"tile"];
+  const [nx,nz,ts,tk]=cfg,gap=wall?.012:.016,Wt=nx*(ts+gap),Dt=nz*(ts+gap);
+  box(Wt+.5,.14,Dt+.5,texMat(v==="heated"?"screed":"plaster",[2,2]),G,0,.07,0);
+  if(v==="heated"){const pts=[];for(let i=0;i<7;i++){const z=-Dt/2+.05+i*(Dt-.1)/6;pts.push(V(i%2?Wt/2:-Wt/2,.05,z));pts.push(V(i%2?-Wt/2:Wt/2,.05,z))}const curve=new T.CatmullRomCurve3(pts);const pipe=mesh(new T.TubeGeometry(curve,200,.018,8,false),std(0xd13b2a,{roughness:.4}),G);
+    box(Wt+.5,.14,Dt+.5,std(0xa8a59c,{transparent:true,opacity:.35,depthWrite:false}),G,0,.07,0).castShadow=false}
+  const adhM=prodMat(p,{roughness:.85});const ridgeG=new T.CylinderGeometry(wall?.022:.028,wall?.022:.028,1,3);ridgeG.rotateZ(Math.PI/2);ridgeG.translate(.5,0,0);
+  const rows=[];const rpt=wall?3:4;for(let r=0;r<nz;r++){const row=[];for(let k=0;k<rpt;k++){const z=-Dt/2+r*(ts+gap)+gap/2+(k+.5)*ts/rpt;const m=mesh(ridgeG,adhM,G,-Wt/2,.15,z);m.rotation.x=Math.PI/6;row.push(m)}rows.push(row)}
+  const tm=texMat(tk,[1,1],{roughness:tk==="tile"?.22:tk==="marble"?.18:.45,bumpScale:.002});const tiles=[];
+  for(let r=0;r<nz;r++)for(let q=0;q<nx;q++){const tl=box(ts,wall?.012:.02,ts,tm,G,-Wt/2+gap/2+ts/2+q*(ts+gap),.18,-Dt/2+gap/2+ts/2+r*(ts+gap));tl.userData.k=(r*nx+q)/(nx*nz);tiles.push(tl)}
+  const crosses=[];if(v!=="mosaic"){const cm=std(0xf2f2f2,{roughness:.5});for(let r=1;r<nz;r++)for(let q=1;q<nx;q++){const g=new T.Group();box(.06,.012,gap*.8,cm,g);box(gap*.8,.012,.06,cm,g);g.position.set(-Wt/2+q*(ts+gap),.19,-Dt/2+r*(ts+gap));G.add(g);crosses.push(g)}}
+  const nt=notched();G.add(nt);nt.traverse(shadowOn);
+  if(wall){G.rotation.x=Math.PI/2;G.position.set(0,1.1,-.1);}
+  const L=11,t0=1.2,rd=(4.4)/nz;
+  return {L,G,cam:wall?{tg:V(0,1.1,0),r:4.2,az:.55,el:.12,fov:34}:{tg:V(0,.1,0),r:4.2,az:.6,el:.7,fov:34},
+    steps:[[0,"Основание ровное, обеспылено и загрунтовано"],[t0,`${short(p)}: нанесение зубчатым шпателем`],[5.8,"Плитка укладывается с поворотом и прижатием"],[9.4,v==="mosaic"?"Мозаика на сетке: ровный шов по всей раскладке":"Крестики держат ровный шов"]],
+    labels:[[G,V(Wt/2+.2,.14,Dt/2+.2),v==="heated"?"Стяжка с тёплым полом":"Основание"],[G,V(-Wt/2+.1,.17,-Dt/2+.1),`${short(p)} · ${thk(p)}`,1.6],[G,V(Wt/2-.2,.2,-Dt/2+.2),{tile:"Керамическая плитка",porcelain:"Керамогранит",marble:"Натуральный камень"}[tk],6.2],[G,V(0,.2,Dt/2),"Где: "+(p.where||"")]],
+    update(t){
+      rows.forEach((row,r)=>{const k=ss(ph(t,t0+r*rd,t0+(r+.95)*rd));row.forEach(m=>{sc(m,Wt*k,1,1)})});
+      const ntk=park(nt,t,t0-.3,t0+nz*rd+.3),i=cl(Math.floor((t-t0)/rd),0,nz-1),lp=((t-t0)/rd)%1;
+      nt.position.set(lerp(Wt/2+.9,-Wt/2+.2+lp*(Wt-.4),ntk),lerp(.6,.2,ntk),lerp(Dt/2+.4,-Dt/2+i*(ts+gap)+ts/2,ntk));nt.rotation.set(0,Math.PI/2,-.5);
+      tiles.forEach(tl=>{const s=5.8+tl.userData.k*3.4,k=ss(ph(t,s,s+.45));tl.visible=t>s-.05;tl.position.y=lerp(.75,wall?.165:.17,k);tl.rotation.y=(1-k)*.5});
+      crosses.forEach((g,i)=>{g.visible=t>9.3+i*.02});
+      rows.forEach(row=>row.forEach(m=>{m.scale.y=t>7?.7:1}));
+    }};
+};
+
+/* 8. Кладка газобетона на тонкий шов */
+A.block=(c,p)=>{
+  const G=new T.Group();c.s.add(G);const am=texMat("aerated",[.8,.4],{roughness:.95,bumpScale:.02});const bw=.6,bh=.25,bd=.3,j=.004;
+  box(2.4,.1,.6,texMat("concrete",[1,.3]),G,0,.05,0);const pm=prodMat(p);
+  for(let r=0;r<2;r++)for(let q=0;q<3;q++)box(bw,bh,bd,am,G,-.62+q*(bw+j)+(r?bw/2:0)-(r?bw/2:0)*.0,.1+bh/2+r*(bh+j),0);
+  const bed=gbox(3*bw,.006,bd-.02,pm,G,"x",-.92,.1+2*(bh+j)+.003,0);
+  const nb=box(bw,bh,bd,am,G,-.62,1,0);const sc2=new T.Group();G.add(sc2);box(.3,.08,.32,std(0x9aa2aa,{metalness:.7,roughness:.4}),sc2,0,.04,0);for(let i=0;i<8;i++)box(.012,.02,.02,steel(),sc2,.15,-.005,-.14+i*.04);
+  const mallet=new T.Group();G.add(mallet);const head=cyl(.05,.05,.14,std(0x202022,{roughness:.8}),mallet,0,0,0);head.rotation.z=Math.PI/2;cyl(.012,.012,.32,woodM(),mallet,0,-.17,0);
+  const L=9;
+  return {L,G,cam:{tg:V(-.1,.45,0),r:3.4,az:.65,el:.3,fov:34},
+    steps:[[0,"Первый ряд выставлен по уровню"],[1,`${short(p)}: тонкий слой ${thk(p)} кареткой`],[3.6,"Блок укладывается на клей со смещением"],[5.2,"Подбивка резиновой киянкой"],[6.8,"Тонкий шов: меньше мостиков холода"]],
+    labels:[[G,V(.9,.3,bd/2),"Газобетон"],[G,V(-.3,.1+2*(bh+j),bd/2),`${short(p)} · ${thk(p)}`,1.6],[G,V(-.6,.15,bd/2),"Где: "+(p.where||"")]],
+    update(t){
+      sc(bed,ss(ph(t,1,3.3)),1,1);const k=park(sc2,t,.8,3.6);sc2.position.set(lerp(1.6,-.92+ph(t,1,3.3)*1.8,k),.1+2*(bh+j)+lerp(.5,.01,k),0);
+      const b=ss(ph(t,3.6,4.6));nb.position.set(-.62+bw*0,lerp(1.2,.1+2*(bh+j)+bh/2+.006,b),0);nb.rotation.z=(1-b)*.2;nb.visible=t>3.5;
+      const mk=park(mallet,t,4.9,6.6);const tap=Math.abs(Math.sin((t-5.2)*9));mallet.position.set(lerp(1.4,-.62,mk),.1+3*(bh+j)+.1+tap*.12*mk,lerp(.6,0,mk));mallet.rotation.z=Math.PI/2*0+tap*.3;
+    }};
+};
+
+/* 9. Затирка швов */
+A.joint=(c,p,v)=>{
+  const G=new T.Group();c.s.add(G);const nx=5,nz=4,ts=.45,gap=.02,W=nx*(ts+gap),D=nz*(ts+gap);
+  box(W+.3,.12,D+.3,texMat("screed",[1.5,1.5]),G,0,.06,0);const tm=texMat(v==="epoxy"?"tile":"porcelain",[1,1],{roughness:v==="epoxy"?.2:.4,bumpScale:.002});
+  for(let r=0;r<nz;r++)for(let q=0;q<nx;q++)box(ts,.03,ts,tm,G,-W/2+gap/2+ts/2+q*(ts+gap),.135,-D/2+gap/2+ts/2+r*(ts+gap));
+  const jm=v==="epoxy"?std(0x2d3236,{roughness:.28,metalness:.05}):prodMat(p,{roughness:.8,map:null,bumpMap:null});if(v!=="epoxy")jm.color.set(0x8c8a85);
+  const joints=[];for(let r=0;r<=nz;r++){const m=gbox(W,.028,gap*.95,jm,G,"y",0,.12,-D/2+r*(ts+gap));m.userData.d=r/nz;joints.push(m)}for(let q=0;q<=nx;q++){const m=gbox(gap*.95,.028,D,jm,G,"y",-W/2+q*(ts+gap),.12,0);m.userData.d=q/nx;joints.push(m)}
+  const haze=box(W,.002,D,std(0xbdbab3,{transparent:true,opacity:0,roughness:1,depthWrite:false}),G,0,.152,0);haze.castShadow=false;
+  const fl=rubberFloat();G.add(fl);fl.traverse(shadowOn);const sp=sponge();G.add(sp);
+  const L=10;
+  return {L,G,cam:{tg:V(0,.1,0),r:3.6,az:.55,el:.72,fov:34},
+    steps:[[0,"Клей схватился, швы очищены"],[1,`${short(p)}: втирание в швы резиновым шпателем по диагонали`],[5.8,"Смывка излишков влажной губкой"],[8.6,v==="epoxy"?"Химстойкий шов без пор":"Ровный водостойкий шов"]],
+    labels:[[G,V(W/2,.15,-D/2+.2),"Плитка"],[G,V(-W/2+(ts+gap),.15,0),`${short(p)}`,2],[G,V(0,.15,D/2),"Где: "+(p.where||"")]],
+    update(t){
+      const pr=ph(t,1.2,5.6);joints.forEach(m=>sc(m,1,ss(cl(pr*1.25-m.userData.d*.25)),1));haze.material.opacity=.5*ss(ph(t,1.5,5))*(1-ss(ph(t,6,8.5)));
+      const k=park(fl,t,1,5.8);fl.position.set(lerp(W/2+.8,lerp(-W/2,W/2,pr)+Math.sin(t*6)*.2,k),lerp(.5,.17,k),lerp(D/2+.4,Math.cos(t*6)*.5,k));fl.rotation.set(0,.8,0);
+      const sk=park(sp,t,5.6,8.6);sp.position.set(lerp(-W/2-.8,Math.sin(t*4)*.6,sk),lerp(.5,.18,sk),lerp(D/2+.4,Math.cos(t*3)*.5,sk));
+    }};
+};
+
+/* 10. Наливной пол в углу комнаты */
+A.level=(c,p)=>{
+  const G=new T.Group();c.s.add(G);const W=3,D=2.2;box(W,.14,D,texMat("concrete",[1.5,1.1]),G,0,.07,0);
+  box(W,.8,.12,texMat("plaster",[1.5,.4]),G,0,.54,-D/2-.06);box(.12,.8,D,texMat("plaster",[1,.4]),G,-W/2-.06,.54,0);
+  const tape=std(0x3d7fd1,{roughness:.9});box(W,.08,.012,tape,G,0,.18,-D/2+.006);box(.012,.08,D,tape,G,-W/2+.006,.18,0);
+  box(W-.02,.002,D-.02,std(0x8fa77b,{roughness:.5,transparent:true,opacity:.5,depthWrite:false}),G,0,.142,0).castShadow=false;
+  const seg=[56,40],geo=new T.PlaneGeometry(W-.03,D-.03,seg[0],seg[1]);geo.rotateX(-Math.PI/2);const lm=prodMat(p,{roughness:.12,metalness:.05,map:tex("plaster",[2,2]),bumpMap:null});lm.color.set(0xb7b5ae);
+  const liq=mesh(geo,lm,G,0,.14,0);const pos=geo.attributes.position,base=pos.array.slice();
+  const pours=[V(-1,0,-.7),V(.6,0,.3)];
+  const edge=gbox(W-.03,.06,.01,lm,G,"y",0,.14,D/2-.02);
+  const bk=bucket(0xd8dde2);G.add(bk);bk.traverse(shadowOn);const stream=new T.Mesh(new T.CylinderGeometry(.03,.045,1,10,1,true),lm);G.add(stream);
+  const sr=spikeRoller();G.add(sr);sr.traverse(shadowOn);
+  const L=11,h=.06;
+  return {L,G,cam:{tg:V(0,.2,0),r:4.6,az:.75,el:.6,fov:34},
+    steps:[[0,"Грунтовка основания, демпферная лента по периметру"],[1,`Розлив ${short(p)} из ведра полосами`],[2.2,`Самовыравнивание ${thk(p)}`],[6.4,"Прокатка игольчатым валиком: выходит воздух"],[9.2,"Хождение через ≈ 4–6 ч, далее финишное покрытие"]],
+    labels:[[G,V(-W/2+.01,.2,.5),"Демпферная лента"],[G,V(.8,.2,D/2-.02),`${short(p)} · ${thk(p)}`,2.4],[G,V(1.2,.07,D/2),"Бетонное основание"],[G,V(-.8,.8,-D/2),"Где: "+(p.where||"")]],
+    update(t){
+      const r1=lerp(0,3.2,ss(ph(t,1.2,5.8))),r2=lerp(0,2.4,ss(ph(t,3,6.6)));
+      for(let i=0;i<pos.count;i++){const x=base[i*3],z=base[i*3+2];const d1=Math.hypot(x-pours[0].x,z-pours[0].z),d2=Math.hypot(x-pours[1].x,z-pours[1].z);const f=Math.max(cl((r1-d1)/.25),cl((r2-d2)/.25));const wave=Math.sin(d1*18-t*6)*.003*(1-ph(t,6,7));pos.setY(i,f>0?f*h+wave:-.01)}
+      pos.needsUpdate=true;geo.computeVertexNormals();lm.roughness=lerp(.08,.65,ss(ph(t,8.8,10.5)));
+      sc(edge,1,cl((r1-2.2)/.6),1);
+      const k=park(bk,t,.8,6.6);const pp=t<3?pours[0]:pours[1];const ang=lerp(0,1.9,ss(ph(t,1,1.4)))*(1-ss(ph(t,6,6.5)));bk.position.set(lerp(2.2,pp.x-.3,k),lerp(.4,1,k),lerp(1.6,pp.z,k));bk.rotation.set(0,0,-ang);
+      const on=ang>1.2;stream.visible=on;if(on){const lip=V(bk.position.x+.16,bk.position.y+.05,bk.position.z),tg=V(pp.x,.2,pp.z);stream.position.copy(lip.clone().add(tg).multiplyScalar(.5));stream.scale.set(1,lip.distanceTo(tg),1);stream.lookAt(tg);stream.rotateX(Math.PI/2)}
+      const rk=park(sr,t,6.3,9);const rp=ph(t,6.4,8.9);sr.position.set(lerp(2.4,-W/2+.4+rp*(W-.8),rk),.27,lerp(1.4,Math.sin(rp*Math.PI*3)*.6,rk));sr.userData.drum.rotation.x=t*8;
+    }};
+};
+
+/* 11. Сухой упрочнитель по свежему бетону + затирочная машина */
+A.topping=(c,p)=>{
+  const G=new T.Group();c.s.add(G);const W=4.2,D=3;const slab=box(W,.2,D,texMat("concrete",[2,1.5],{roughness:.35}),G,0,.1,0);slab.material.color.setScalar(.72);
+  const wd=texMat("wood",[1,.1]);box(W+.1,.24,.05,wd,G,0,.12,D/2+.03);box(.05,.24,D,wd,G,W/2+.03,.12,0);
+  const dust=box(W,.003,D,std(0xd6d4cc,{transparent:true,opacity:0,roughness:1,map:tex("plaster",[3,3]),depthWrite:false}),G,0,.203,0);dust.castShadow=false;
+  const parts=pointsSys(600,0xe2e0d8,.022);G.add(parts);const hand=glove(0xe0a426);G.add(hand);
+  const pt=powerTrowel();G.add(pt);pt.traverse(shadowOn);
+  const L=11;
+  return {L,G,cam:{tg:V(0,.2,0),r:5.4,az:.6,el:.58,fov:34},
+    steps:[[0,"Свежий бетон: на поверхности след ноги 3–5 мм"],[.9,`Рассыпать 2/3 нормы ${short(p)} равномерно`],[4,"Затирка дисками затирочной машины"],[7.6,"Остаток 1/3 и финишная затирка лопастями"],[9.8,"Износостойкий монолитный слой 3–8 кг/м²"]],
+    labels:[[G,V(W/2,.15,D/2),"Свежий бетон"],[G,V(-1.4,.21,-.8),`${short(p)}`,2],[G,V(1.2,.21,-1.2),"Где: "+(p.where||"")]],
+    update(t){
+      dust.material.opacity=.85*ss(ph(t,1,3.6))*(1-.6*ss(ph(t,4.5,7.5)))+.4*ss(ph(t,7.6,8.6))*(1-ss(ph(t,8.8,10.6)));
+      slab.material.roughness=lerp(.35,.12,ss(ph(t,8.6,10.6)));slab.material.color.setScalar(lerp(.72,.82,ss(ph(t,4,10))));
+      const on=(t>.9&&t<3.7)||(t>7.6&&t<8.6);parts.visible=on;const hx=t<4?lerp(-1.8,1.8,ph(t,.9,3.7)):lerp(1.8,-1.8,ph(t,7.6,8.6));
+      const hk=park(hand,t,.7,3.9)+park(hand,t,7.4,8.8);hand.visible=hk>.02;hand.position.set(hx,1.15,lerp(2.2,Math.sin(t*3)*.6,cl(hk)));hand.rotation.set(.6,0,0);
+      const pp=parts.geometry.attributes.position;if(on)parts.userData.seeds.forEach((s,i)=>{const q=(t*1.6+s[0])%1;pp.setXYZ(i,hx+(s[1]-.5)*(.4+q*1.2),lerp(1.1,.21,q),hand.position.z+(s[2]-.5)*(.4+q*1.6))});pp.needsUpdate=true;
+      const k=park(pt,t,3.8,10.8);const tp=ph(t,4,10.6),lane=Math.floor(tp*4),lp=(tp*4)%1;
+      pt.position.set(lerp(3,(lane%2?1-lp:lp)*(W-1)-(W-1)/2,k),.2,lerp(2.4,-D/2+.55+lane*.62,k));pt.rotation.y=Math.PI*.15;pt.userData.blades.rotation.y=t*14;
+    }};
+};
+
+/* 12. Штукатурка по кирпичу */
+A.plaster=(c,p)=>{
+  const G=new T.Group();c.s.add(G);const W=3,H=2.2;box(W,H,.25,texMat("brick",[1.5,1.1],{bumpScale:.03}),G,0,H/2,-.125);
+  const geo=new T.PlaneGeometry(W-.06,H-.06,60,44);const base=[];const pa=geo.attributes.position;for(let i=0;i<pa.count;i++)base.push(rnd());
+  const pm=prodMat(p,{roughness:.92,map:tex("plaster",[2,2]),bumpMap:tex("plaster",[2,2])});const clip=new T.Plane(V(0,-1,0),0);pm.clippingPlanes=[clip];pm.side=T.DoubleSide;
+  const pl=mesh(geo,pm,G,0,H/2,.012);pl.castShadow=false;
+  const tr=trowel();G.add(tr);tr.traverse(shadowOn);const ru=rule(1.9);G.add(ru);ru.traverse(shadowOn);
+  const L=10;
+  return {L,G,cam:{tg:V(0,1.05,0),r:4.5,az:.62,el:.12,fov:34},
+    steps:[[0,"Кладка обеспылена и загрунтована"],[.8,`Набрасывание ${short(p)} снизу вверх, ${thk(p)}`],[4.8,"Выравнивание правилом"],[8,"Затирка: ровная прочная поверхность"]],
+    labels:[[G,V(1.3,1.9,.01),"Кирпичная кладка"],[G,V(-.8,.6,.03),`${short(p)} · ${thk(p)}`,2],[G,V(.6,.3,.03),"Где: "+(p.where||"")]],
+    update(t){
+      const fill=lerp(0,H,ss(ph(t,.9,4.6)));clip.constant=G.position.y+fill;
+      const rp=ph(t,4.8,7.8),ry=lerp(.1,H-.05,rp);
+      for(let i=0;i<pa.count;i++){const y=pa.getY(i)+H/2;const amp=y>ry?1:lerp(1,.05,ss(ph(t,4.8,5.2)));pa.setZ(i,(base[i]-.5)*.03*amp+Math.sin(pa.getX(i)*9+y*7)*.008*amp)}pa.needsUpdate=true;geo.computeVertexNormals();
+      pm.roughness=t>8?lerp(.92,.75,ph(t,8,9)):.92;
+      const k=park(tr,t,.7,4.7);tr.position.set(lerp(1.8,Math.sin(t*5)*1.1,k),lerp(.5,Math.max(.1,fill-.1),k),lerp(.6,.08,k));tr.rotation.set(Math.PI/2-.3,0,Math.sin(t*5)*.3);
+      const rk=park(ru,t,4.6,8);ru.position.set(lerp(1.8,0,rk),lerp(.3,ry,rk),lerp(.6,.05,rk));ru.rotation.z=Math.sin(t*10)*.03;
+    }};
+};
+
+/* 13. Грунтовка валиком с проникновением в поры */
+A.primer=(c,p)=>{
+  const G=new T.Group();c.s.add(G);const W=3,D=2;box(W,.3,D,texMat("screed",[1.5,1]),G,0,.15,0);
+  const wm=new T.MeshPhysicalMaterial({color:0x56604f,roughness:.15,metalness:0,clearcoat:.8,transparent:true,opacity:.78});const clip=new T.Plane(V(-1,0,0),0);wm.clippingPlanes=[clip];
+  const wet=box(W-.02,.003,D-.02,wm,G,0,.302,0);wet.castShadow=false;
+  const drops=new T.InstancedMesh(new T.SphereGeometry(.012,8,6),std(0x9fd18a,{roughness:.3,transparent:true,opacity:.85}),180);G.add(drops);drops.frustumCulled=false;const dd=[];for(let i=0;i<180;i++)dd.push([-W/2+rnd()*W,rnd()*.12,rnd()]);
+  const ro=roller(0xf0ead8);G.add(ro);ro.traverse(shadowOn);const bk=bucket(0xe8edf1);G.add(bk);bk.position.set(1.7,0,-.9);bk.traverse(shadowOn);
+  const L=10;
+  return {L,G,cam:{tg:V(0,.25,.2),r:4.4,az:.5,el:.42,fov:34},
+    steps:[[0,"Основание обеспылено, концентрат разведён водой"],[.8,`${short(p)}: нанесение валиком без луж`],[5,"Грунт впитывается в поры и укрепляет поверхность"],[7.4,"Высыхание ≈ 2 ч до отлипа, далее клей / наливной пол"]],
+    labels:[[G,V(W/2,.15,D/2),"Стяжка / бетон"],[G,V(-.8,.3,.4),`${short(p)}`,1.6],[G,V(-1.2,.08,D/2),"Проникновение в поры",5],[G,V(1.1,.3,-.7),"Где: "+(p.where||"")]],
+    update(t){
+      const pr=ss(ph(t,.9,5));const xedge=-W/2+pr*W;clip.constant=G.position.x+xedge;
+      wm.roughness=lerp(.12,.7,ss(ph(t,7.4,9.4)));wm.opacity=lerp(.78,.4,ss(ph(t,7.4,9.4)));wm.clearcoat=lerp(.7,0,ss(ph(t,7.4,9.4)));
+      const m=new T.Matrix4();dd.forEach((d,i)=>{const on=d[0]<xedge;const k=on?ss(ph(t,1+((d[0]+W/2)/W)*4,6.5+d[2])):0;m.makeTranslation(d[0],.29-k*(.05+d[1]),D/2+.001);m.scale(V(k>0?1:S0,k>0?1:S0,k>0?.3:S0));drops.setMatrixAt(i,m)});drops.instanceMatrix.needsUpdate=true;
+      const k=park(ro,t,.7,5.2);ro.position.set(lerp(1.8,xedge,k),lerp(.6,.35,k),lerp(1.2,Math.sin(t*4)*.6,k));
+    }};
+};
+
+/* 14. Праймер + герметик в шве панелей */
+A.seal=(c,p)=>{
+  const G=new T.Group();c.s.add(G);G.position.y=1.05;const cm=texMat("concrete",[1,1]);const gap=.04,H=2;
+  box(1.4,H,.25,cm,G,-.7-gap/2,0,-.125);box(1.4,H,.25,cm,G,.7+gap/2,0,-.125);
+  const rod=cyl(.022,.022,H,std(0x3d7fd1,{roughness:.9}),G,0,0,-.05,12);
+  const prm=std(0x55534f,{roughness:.4});const e1=gbox(.03,H,.004,prm,G,"y",-gap/2-.015,-H/2,.002),e2=gbox(.03,H,.004,prm,G,"y",gap/2+.015,-H/2,.002);
+  const sm=std(0x6b7076,{roughness:.35});const bead=gbox(gap+.02,H,.03,sm,G,"y",0,-H/2,-.02);
+  const br=brush();G.add(br);br.scale.setScalar(.5);const gn=gun();G.add(gn);gn.traverse(shadowOn);
+  const L=10;
+  return {L,G,cam:{tg:V(0,1.05,0),r:3.4,az:.55,el:.12,fov:34},
+    steps:[[0,"Шов очищен, установлен уплотнительный шнур"],[1,`${short(p)} кистью по кромкам шва`],[4.2,"Выдержка 30 мин – 8 ч"],[5.4,"Герметик Sikaflex по загрунтованным кромкам"]],
+    labels:[[G,V(-.9,.8,.01),"Бетонная панель"],[G,V(0,-.7,-.04),"Уплотнительный шнур",0,5.4],[G,V(-.04,.2,.01),`${short(p)}`,1.4],[G,V(.05,-.2,.02),"Герметик",7],[G,V(.6,-.85,.01),"Где: "+(p.where||"")]],
+    update(t){
+      const a=ph(t,1,4);sc(e1,1,ss(cl(a*2)),1);sc(e2,1,ss(cl(a*2-1)),1);
+      const bk=park(br,t,.8,4.2);br.position.set(lerp(1.2,a<.5?-gap/2-.02:gap/2+.02,bk),lerp(-.8,-H/2+(a<.5?a*2:a*2-1)*H,bk),lerp(.5,.06,bk));br.rotation.set(Math.PI/2,0,0);
+      const b=ph(t,5.6,9);sc(bead,1,ss(b),1);const gk=park(gn,t,5.3,9.3);gn.position.set(lerp(1.2,.24,gk),lerp(-.8,-H/2+b*H,gk),lerp(.6,.05,gk));gn.rotation.set(0,Math.PI,.25);
+    }};
+};
+
+/* ---------- product → scenario ---------- */
+const KIND={s488:"repair",mt612:"repair",t1100:"repair:soffit",t300:"road",n900:"skim",mt620:"skim",s590:"plug",s501:"coat:cryst",s107:"coat:two",g928:"grout",g212:"grout",
+ "c-std":"tile:wall","c-uni":"tile:wall",c14:"tile:mosaic","c-pro":"tile:large",c15:"tile:stone",flx24:"tile:heated",c5:"block",t555:"joint",c800:"joint:epoxy",
+ f120:"level",sl505:"level",qt100:"topping",chap:"topping",r335:"plaster",p300:"primer",p310:"primer",p333:"primer",p3n:"seal"};
+const WHERE={s488:"колонны, балки, плиты, мосты",mt612:"балконы, колонны, ригели",t1100:"пролёты мостов, потолки, эстакады",t300:"люки, бордюры, дорожный бетон",n900:"фасады, колонны, бетон под окраску",mt620:"стены, откосы, мелкий ремонт",
+ s590:"подвалы, шахты, колодцы, тоннели",s501:"подвалы, резервуары, колодцы",s107:"бассейны, балконы, фундаменты",g928:"оборудование, колонны, анкеры",g212:"анкеры, стыки, полости",
+ "c-std":"кафель в ванной и кухне","c-uni":"стены и полы внутри и снаружи",c14:"мозаика, кафель",
+ "c-pro":"крупный формат, керамогранит",c15:"мрамор, гранит, камень",flx24:"тёплые полы, фасады, бассейны",c5:"стены из газо- и пеноблоков",t555:"швы плитки в санузлах и кухнях",c800:"пищеблоки, бассейны, лаборатории",
+ f120:"квартиры, офисы под ламинат и плитку",sl505:"жилые и офисные помещения",qt100:"склады, паркинги, цеха",chap:"промышленные полы",r335:"фасады, цоколи, стены",p300:"под клей, наливной пол, штукатурку",p310:"стены и полы",p333:"под плитку и отделку",p3n:"швы панелей, окна, кровля"};
+
+function makeView(p,big){
+  const c=base();const [k,v]=(KIND[p.id]||"repair").split(":");p.where=p.where||WHERE[p.id]||"";
+  seed=p.id.length*131+7;const camera=c.cam;const a=A[k](c,p,v);const cfg=a.cam;delete a.cam;const view=Object.assign(c,a,{p,big,off:Math.random()*a.L,lab:[],stepI:-1,cam:camera,c:cfg});
+  camera.fov=cfg.fov;return view;
+}
+
+/* ---------- DOM views ---------- */
+const views=new Map(),vis=new Set();
+const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?vis.add(e.target):vis.delete(e.target)),{rootMargin:"120px"});
+function ensureDom(view,el){
+  if(view.dom===el)return;view.dom=el;el.querySelectorAll(".lb,.cap").forEach(n=>n.remove());
+  view.lab=view.labels.map((l,i)=>{const s=document.createElement("span");s.className="lb";s.textContent=l[2];if(!view.big&&!(i===0||l[2].indexOf(short(view.p))===0))s.classList.add("where");el.appendChild(s);return s});
+  view.cap=document.createElement("div");view.cap.className="cap";el.appendChild(view.cap);
+}
+function disposeView(v){v.s.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){[].concat(o.material).forEach(m=>{m.map&&m.map.dispose();m.dispose()})}})}
+window.v3dScan=function(){
+  document.querySelectorAll(".v3d").forEach(el=>{if(!el.dataset.obs){el.dataset.obs=1;io.observe(el)}});
+  for(const [el,v] of views)if(!document.body.contains(el)){disposeView(v);views.delete(el);vis.delete(el);io.unobserve(el)}
+};
+function getView(el){let v=views.get(el);if(!v){const p=P.find(x=>x.id===el.dataset.v);if(!p)return null;v=makeView(p,el.classList.contains("big"));views.set(el,v)}ensureDom(v,el);return v}
+
+const tmp=new T.Vector3();let W0=0,H0=0,R2=null,cv2=null;
+function setupR(r){r.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.08;r.shadowMap.enabled=true;r.shadowMap.type=T.PCFSoftShadowMap;r.setClearColor(0,0);r.localClippingEnabled=true;return r}
+function drive(v,el,rw,rh,T0){
+  const t=RM?v.L*.82:(T0+v.off)%v.L;v.update(t);
+  const cc=v.c,az=cc.az+(RM?0:Math.sin(T0*.25+v.off)*.16);
+  v.cam.aspect=rw/rh;const rr=cc.r*(v.cam.aspect<1.2?1.22:1)*(v.big?.92:1);
+  v.cam.position.set(cc.tg.x+rr*Math.cos(cc.el)*Math.sin(az),cc.tg.y+rr*Math.sin(cc.el),cc.tg.z+rr*Math.cos(cc.el)*Math.cos(az));v.cam.lookAt(cc.tg);v.cam.updateProjectionMatrix();
+  return t;
+}
+function overlay(v,el,rw,rh,t){
+  v.labels.forEach((l,i)=>{const s=v.lab[i];if(!s)return;const on=l[4]!==0&&t>=(l[3]||0)&&t<=(l[4]===undefined?99:l[4]);
+    tmp.copy(l[1]);l[0].localToWorld(tmp);tmp.project(v.cam);const x=(tmp.x+1)/2*rw,y=(1-tmp.y)/2*rh;
+    s.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;s.classList.toggle("off",!on||tmp.z>1||x<4||x>rw-4||y<4||y>rh-4);s.classList.toggle("flip",x>rw*.6)});
+  let si=0;v.steps.forEach((s,i)=>{if(t>=s[0])si=i});
+  if(si!==v.stepI){v.stepI=si;v.cap.innerHTML=`<b>${si+1}/${v.steps.length}</b> ${v.steps[si][1]}`;const ol=document.querySelector("#sheet .v3d-steps");if(v.big&&ol)ol.querySelectorAll("li").forEach((li,i)=>li.classList.toggle("now",i===si))}
+  const bar=el.querySelector(".prog");if(bar)bar.style.transform=`scaleX(${(t/v.L).toFixed(3)})`;
+}
+function frame(now){
+  requestAnimationFrame(frame);const T0=now/1000;
+  const open=!document.getElementById("drawer").hidden;
+  if(open){
+    const el=document.querySelector("#sheet .v3d");if(el){
+      if(!R2){cv2=document.createElement("canvas");cv2.className="gl2";try{R2=setupR(new T.WebGLRenderer({canvas:cv2,antialias:true,alpha:true}))}catch(e){R2=null}}
+      if(R2){if(cv2.parentElement!==el)el.prepend(cv2);const rw=el.clientWidth,rh=el.clientHeight;if(cv2._w!==rw||cv2._h!==rh){R2.setSize(rw,rh,false);cv2._w=rw;cv2._h=rh}
+        const v=getView(el);if(v){const t=drive(v,el,rw,rh,T0);R2.render(v.s,v.cam);overlay(v,el,rw,rh,t)}}}
+    return;
+  }
+  const w=document.documentElement.clientWidth,h=window.innerHeight;if(w!==W0||h!==H0){W0=w;H0=h;R.setSize(w,h,false)}
+  R.setScissorTest(false);R.clear();R.setScissorTest(true);
+  for(const el of vis){
+    const r=el.getBoundingClientRect();if(r.bottom<0||r.top>h||r.width<4||r.height<4)continue;
+    const v=getView(el);if(!v)continue;const t=drive(v,el,r.width,r.height,T0);
+    R.setViewport(r.left,h-r.bottom,r.width,r.height);R.setScissor(r.left,h-r.bottom,r.width,r.height);R.render(v.s,v.cam);overlay(v,el,r.width,r.height,t);
+  }
+}
+window.v3dScan();requestAnimationFrame(frame);
+window.v3dSteps=id=>{const p=P.find(x=>x.id===id);if(!p)return"";const v=makeView(p,true);const html=v.steps.map(s=>`<li>${s[1]}</li>`).join("");disposeView(v);return html};
+})();
+
 </script>
